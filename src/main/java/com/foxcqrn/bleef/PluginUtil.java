@@ -21,7 +21,8 @@ public class PluginUtil {
     public static int WorldBorder = 5000;
     public static String ErrNoPerm = ChatColor.RED + "You do not have permission to run this command.";
     public static String ErrNoConsole = ChatColor.RED + "Only players may run this command.";
-    private static String AFKPrefix = ChatColor.GRAY + "" + ChatColor.ITALIC + "[AFK] ";
+    private static final String AFKPrefix = ChatColor.GRAY + "" + ChatColor.ITALIC + "[AFK] ";
+    public static String DiscordInvite = "https://discord.gg/8zZapcP7fV";
     public static String[] MOTDArray = new String[]{
             "best minecraft server in the world",
             ChatColor.AQUA + "B" + ChatColor.GOLD + "O" + ChatColor.LIGHT_PURPLE + "N" + ChatColor.YELLOW + "F " + ChatColor.GREEN + "<3",
@@ -76,8 +77,7 @@ public class PluginUtil {
     public static net.md_5.bungee.api.ChatColor getColor(Player player) {
         String hex = config.getString("players." + player.getUniqueId() + ".color");
         if (hex == null) hex = config.getString("players.default.color");
-        net.md_5.bungee.api.ChatColor color = net.md_5.bungee.api.ChatColor.of(hex);
-        return color;
+        return net.md_5.bungee.api.ChatColor.of(hex);
     }
 
     public static TextComponent showName(Player player) {
@@ -90,21 +90,11 @@ public class PluginUtil {
         return tc;
     }
 
-    public static TextComponent namedMessage(Player player, String message) {
-        TextComponent msg = showName(player);
-        msg.addExtra(message);
-        return msg;
-    }
-
     public static void updateName(Player player) {
         String name = getNickname(player);
         net.md_5.bungee.api.ChatColor color = getColor(player);
         player.setDisplayName(color + name);
         player.setPlayerListName(color + name);
-    }
-
-    public static void broadcast(TextComponent message) {
-        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(message));
     }
 
     public static void registerGlow() {

@@ -38,16 +38,14 @@ public class EventListener implements Listener {
     public void onServerPing(ServerListPingEvent event) {
         Random r = new Random();
         int randomNumber = r.nextInt(PluginUtil.MOTDArray.length);
-        event.setMotd(ChatColor.LIGHT_PURPLE + PluginUtil.MOTDArray[randomNumber] + "\n" + ChatColor.AQUA + "https://discord.gg/8zZapcP7fV");
+        event.setMotd(ChatColor.LIGHT_PURPLE + PluginUtil.MOTDArray[randomNumber] + "\n" + ChatColor.AQUA + PluginUtil.DiscordInvite);
         event.setMaxPlayers(420);
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getOnlinePlayers().forEach((online) -> {
-            online.setPlayerListHeaderFooter("\n" + ChatColor.LIGHT_PURPLE + "survival building server" + "\n", "\nPlayers online: " + ChatColor.YELLOW + Bukkit.getOnlinePlayers().size() + "\n");
-        });
+        Bukkit.getOnlinePlayers().forEach((online) -> online.setPlayerListHeaderFooter("\n" + ChatColor.LIGHT_PURPLE + "survival building server" + "\n", "\nPlayers online: " + ChatColor.YELLOW + Bukkit.getOnlinePlayers().size() + "\n"));
         if (!player.hasPlayedBefore()) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "Welcome to the server, " + player.getName() + "!");
             player.teleport(PluginUtil.SpawnLocation);
@@ -59,9 +57,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getOnlinePlayers().forEach((online) -> {
-            online.setPlayerListHeaderFooter("\n" + ChatColor.LIGHT_PURPLE + "survival building server" + "\n", "\nPlayers online: " + ChatColor.YELLOW + (Bukkit.getOnlinePlayers().size() - 1) + "\n");
-        });
+        Bukkit.getOnlinePlayers().forEach((online) -> online.setPlayerListHeaderFooter("\n" + ChatColor.LIGHT_PURPLE + "survival building server" + "\n", "\nPlayers online: " + ChatColor.YELLOW + (Bukkit.getOnlinePlayers().size() - 1) + "\n"));
         event.setQuitMessage(player.getDisplayName() + ChatColor.YELLOW + " has left the game");
     }
     @EventHandler
