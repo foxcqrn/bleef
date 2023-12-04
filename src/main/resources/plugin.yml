@@ -1,0 +1,30 @@
+name: Bleef
+version: '${project.version}'
+main: com.foxcqrn.bleef.Bleef
+api-version: 1.19
+authors: [ hotgothgirl, foxcqrn ]
+description: core plugin for Backslash smp server
+commands:
+  afk:
+    description: 'Toggle AFK status'
+  togglecoords:
+    description: 'Toggle XYZ coordinates shown on the action bar'
+    aliases: [tc, coords]
+  playerstats:
+    description: 'View info about a player'
+    aliases: [ pstats, pinfo, ps, pi ]
+  housemarker:
+    description: 'Create/delete your house marker on the dynmap'
+    usage: '/housemarker <create|delete>'
+    aliases: [ hm ]
+  cornerarray:
+    description: 'Add multiple coordinates to the dynmap corner list at once'
+    aliases: [ ca ]
+  color:
+    description: 'Set custom name hex color'
+    usage: '/color <#hex>'
+    aliases: [setcolor]
+  nickname:
+    description: 'Set custom nickname'
+    usage: '/nickname <name>'
+    aliases: [nick, name, setname, setnick, nn]
