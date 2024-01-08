@@ -28,3 +28,6 @@ commands:
     description: 'Set custom nickname'
     usage: '/nickname <name>'
     aliases: [nick, name, setname, setnick, nn]
+  sudo:
+    description: 'Run command as user'
+    usage: '/sudo <username> <command>'

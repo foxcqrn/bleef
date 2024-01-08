@@ -3,7 +3,6 @@ package com.foxcqrn.bleef;
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,13 +27,14 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new WeedListener(), plugin);
         pm.registerEvents(new LeashListener(), plugin);
 
-        this.getCommand("afk").setExecutor((CommandExecutor) new CommandAfk(plugin));
-        this.getCommand("togglecoords").setExecutor((CommandExecutor) new CommandToggleCoords(plugin));
-        this.getCommand("playerstats").setExecutor((CommandExecutor) new CommandPlayerStats(plugin));
-        this.getCommand("housemarker").setExecutor((CommandExecutor) new CommandHouseMarker(plugin));
-        this.getCommand("cornerarray").setExecutor((CommandExecutor) new CommandCornerArray(plugin));
-        this.getCommand("color").setExecutor((CommandExecutor) new CommandColor(plugin));
-        this.getCommand("nickname").setExecutor((CommandExecutor) new CommandNickname(plugin));
+        this.getCommand("afk").setExecutor(new CommandAfk(plugin));
+        this.getCommand("togglecoords").setExecutor(new CommandToggleCoords(plugin));
+        this.getCommand("playerstats").setExecutor(new CommandPlayerStats(plugin));
+        this.getCommand("housemarker").setExecutor(new CommandHouseMarker(plugin));
+        this.getCommand("cornerarray").setExecutor(new CommandCornerArray(plugin));
+        this.getCommand("color").setExecutor(new CommandColor(plugin));
+        this.getCommand("nickname").setExecutor(new CommandNickname(plugin));
+        this.getCommand("sudo").setExecutor(new CommandSudo(plugin));
 
         Bukkit.addRecipe(Items.fleshBlockRecipe());
         Bukkit.addRecipe(Items.rottenFleshRecipe());

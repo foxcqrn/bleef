@@ -75,9 +75,10 @@ public class EventListener implements Listener {
             event.setCancelled(true);
             player.sendMessage(ChatColor.AQUA + "You have reached the world border. You cannot go past this point.");
         }
+        double speed =  Math.floor(event.getFrom().distance(event.getTo()) * 200) / 10;
         if (!PluginUtil.ToggleCoords.contains(player.getName())) {
             ChatColor color = ChatColor.LIGHT_PURPLE; // doesn't support hex colors :(
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(ChatColor.WHITE + "X: " + color + x2 + ChatColor.WHITE + " Y: " + color + y + ChatColor.WHITE + " Z: " + color + z2).create());
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(ChatColor.WHITE + "X: " + color + x2 + ChatColor.WHITE + " Y: " + color + y + ChatColor.WHITE + " Z: " + color + z2 + ChatColor.WHITE + " MPS: " + color + speed).create());
         }
     }
 
