@@ -25,13 +25,13 @@ public class CommandSurvival implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        if (player.getLocation().getWorld().getName().contains("world")) {
+        if (!PluginUtil.isCreative(player)) {
             sender.sendMessage(PluginUtil.ErrWrongWorld);
             return true;
         }
         sender.sendMessage(ChatColor.GREEN + "Teleporting to survival world...");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvtp " + sender.getName().toLowerCase() + " world");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamemode survival  " + sender.getName().toLowerCase());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamemode survival " + sender.getName().toLowerCase());
 
         return true;
     }

@@ -1,6 +1,7 @@
 package com.foxcqrn.bleef.commands;
 
 import com.foxcqrn.bleef.Bleef;
+import com.foxcqrn.bleef.PluginUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,6 +18,10 @@ public class CommandHouseMarker implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
         Player player = (Player) sender;
+        if (PluginUtil.isCreative(player)) {
+            sender.sendMessage(PluginUtil.ErrWrongWorld);
+            return true;
+        }
         String name = sender.getName();
         if (sender.isOp() && args.length == 2) name = args[1];
         Location location = player.getLocation();

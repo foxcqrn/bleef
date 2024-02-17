@@ -5,6 +5,7 @@ import com.foxcqrn.bleef.PluginUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -168,7 +169,6 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onArmor(InventoryClickEvent event) {
-
         if (event.getSlot() != 39 || event.getSlotType() != InventoryType.SlotType.ARMOR) {
             return;
         }
@@ -184,6 +184,17 @@ public class EventListener implements Listener {
         if (item.getType() == Material.AIR && cursor.getType() != Material.AIR) {
             p.setItemOnCursor(null);
             Bukkit.getScheduler().runTask(plugin, () -> p.getInventory().setHelmet(cursor));
+        }
+    }
+
+    @EventHandler
+    public void onAdvancement(PlayerAdvancementDoneEvent event) {
+        Player player = event.getPlayer();
+        if (PluginUtil.isCreative(player)) {
+            Advancement advancement = event.getAdvancement();
+            for(String c: advancement.getCriteria()) {
+                player.getAdvancementProgress(advancement).revokeCriteria(c);
+            }
         }
     }
 
