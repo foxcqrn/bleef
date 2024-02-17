@@ -31,6 +31,8 @@ public class CommandSurvival implements CommandExecutor {
         }
         sender.sendMessage(ChatColor.GREEN + "Teleporting to survival world...");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvtp " + sender.getName().toLowerCase() + " world");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamemode survival  " + sender.getName().toLowerCase());
+
         return true;
     }
 
