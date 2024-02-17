@@ -39,3 +39,7 @@ commands:
     description: 'Teleport to survival world'
     usage: '/survival'
     aliases: [ s ]
+  list:
+    description: 'Lists server members'
+    usage: '/list'
+    aliases: [ online ]

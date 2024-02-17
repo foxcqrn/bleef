@@ -37,6 +37,7 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("sudo").setExecutor(new CommandSudo(plugin));
         this.getCommand("creative").setExecutor(new CommandCreative(plugin));
         this.getCommand("survival").setExecutor(new CommandSurvival(plugin));
+        this.getCommand("list").setExecutor(new CommandList(plugin));
 
         Bukkit.addRecipe(Items.fleshBlockRecipe());
         Bukkit.addRecipe(Items.rottenFleshRecipe());
