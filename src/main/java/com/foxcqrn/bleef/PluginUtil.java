@@ -21,6 +21,7 @@ public class PluginUtil {
     public static int WorldBorder = 5000;
     public static String ErrNoPerm = ChatColor.RED + "You do not have permission to run this command.";
     public static String ErrNoConsole = ChatColor.RED + "Only players may run this command.";
+    public static String ErrWrongWorld = ChatColor.RED + "You can't use that command in this world.";
     private static final String AFKPrefix = ChatColor.GRAY + "" + ChatColor.ITALIC + "[AFK] ";
     public static String DiscordInvite = "https://discord.gg/8zZapcP7fV";
     public static String[] MOTDArray = new String[]{
