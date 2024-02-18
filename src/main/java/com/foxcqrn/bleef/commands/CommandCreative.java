@@ -25,8 +25,7 @@ public class CommandCreative implements CommandExecutor {
         }
 
         sender.sendMessage(ChatColor.GREEN + "Teleporting to creative world...");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvtp " + sender.getName().toLowerCase() + " creative");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamemode creative " + sender.getName().toLowerCase());
+        Bukkit.dispatchCommand(sender, "server creative");
 
         return true;
     }

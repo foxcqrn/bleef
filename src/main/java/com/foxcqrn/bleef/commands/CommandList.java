@@ -19,7 +19,7 @@ public class CommandList implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
 
-        Bukkit.dispatchCommand(sender, "mv who");
+        Bukkit.dispatchCommand(sender, "glist");
 
         return true;
     }

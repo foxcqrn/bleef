@@ -69,8 +69,6 @@ public class PluginUtil {
         }
     }
 
-    public static boolean isCreative(Player player) { return player.getWorld().getName().contains("creative"); };
-
     public static String getNickname(Player player) {
         String nickname = config.getString("players." + player.getUniqueId() + ".nickname");
         if (nickname == null) nickname = player.getName();

@@ -61,6 +61,7 @@ public class EventListener implements Listener {
         Bukkit.getOnlinePlayers().forEach((online) -> online.setPlayerListHeaderFooter("\n" + ChatColor.LIGHT_PURPLE + "survival building server" + "\n", "\nPlayers online: " + ChatColor.YELLOW + (Bukkit.getOnlinePlayers().size() - 1) + "\n"));
         event.setQuitMessage(player.getDisplayName() + ChatColor.YELLOW + " has left the game");
     }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
@@ -76,7 +77,7 @@ public class EventListener implements Listener {
             event.setCancelled(true);
             player.sendMessage(ChatColor.AQUA + "You have reached the world border. You cannot go past this point.");
         }
-        double speed =  Math.floor(event.getFrom().distance(event.getTo()) * 200) / 10;
+        double speed = Math.floor(event.getFrom().distance(event.getTo()) * 200) / 10;
         if (!PluginUtil.ToggleCoords.contains(player.getName())) {
             ChatColor color = ChatColor.LIGHT_PURPLE; // doesn't support hex colors :(
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(ChatColor.WHITE + "X: " + color + x2 + ChatColor.WHITE + " Y: " + color + y + ChatColor.WHITE + " Z: " + color + z2 + ChatColor.WHITE + " MPS: " + color + speed).create());
@@ -106,11 +107,11 @@ public class EventListener implements Listener {
         ItemStack tool = player.getInventory().getItemInMainHand();
 
         if (tool.getType() == Material.WOODEN_HOE ||
-            tool.getType() == Material.STONE_HOE ||
-            tool.getType() == Material.IRON_HOE ||
-            tool.getType() == Material.GOLDEN_HOE ||
-            tool.getType() == Material.DIAMOND_HOE ||
-            tool.getType() == Material.NETHERITE_HOE) {
+                tool.getType() == Material.STONE_HOE ||
+                tool.getType() == Material.IRON_HOE ||
+                tool.getType() == Material.GOLDEN_HOE ||
+                tool.getType() == Material.DIAMOND_HOE ||
+                tool.getType() == Material.NETHERITE_HOE) {
             if (block.getType() == Material.WHEAT) {
                 event.setCancelled(true);
                 Ageable ageable = (Ageable) block.getBlockData();
@@ -186,16 +187,4 @@ public class EventListener implements Listener {
             Bukkit.getScheduler().runTask(plugin, () -> p.getInventory().setHelmet(cursor));
         }
     }
-
-    @EventHandler
-    public void onAdvancement(PlayerAdvancementDoneEvent event) {
-        Player player = event.getPlayer();
-        if (PluginUtil.isCreative(player)) {
-            Advancement advancement = event.getAdvancement();
-            for(String c: advancement.getCriteria()) {
-                player.getAdvancementProgress(advancement).revokeCriteria(c);
-            }
-        }
-    }
-
 }
