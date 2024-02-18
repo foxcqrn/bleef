@@ -1,18 +1,20 @@
 package com.foxcqrn.bleef;
 
-import com.foxcqrn.bleef.commands.*;
-import com.foxcqrn.bleef.listener.*;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.event.EventHandler;
 
+import java.util.Random;
 import java.util.logging.Level;
 
-public final class Bleef extends JavaPlugin {
+public final class Bleef extends Plugin implements Listener {
 
     public static Bleef plugin;
-    FileConfiguration config = getConfig();
 
     @Override
     public void onLoad() {
@@ -21,38 +23,27 @@ public final class Bleef extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        final PluginManager pm = plugin.getServer().getPluginManager();
-        pm.registerEvents(new EventListener(), plugin);
-        pm.registerEvents(new AfkListener(), plugin);
-        pm.registerEvents(new WeedListener(), plugin);
-        pm.registerEvents(new LeashListener(), plugin);
-
-        this.getCommand("afk").setExecutor(new CommandAfk(plugin));
-        this.getCommand("togglecoords").setExecutor(new CommandToggleCoords(plugin));
-        this.getCommand("playerstats").setExecutor(new CommandPlayerStats(plugin));
-        this.getCommand("housemarker").setExecutor(new CommandHouseMarker(plugin));
-        this.getCommand("cornerarray").setExecutor(new CommandCornerArray(plugin));
-        this.getCommand("color").setExecutor(new CommandColor(plugin));
-        this.getCommand("nickname").setExecutor(new CommandNickname(plugin));
-        this.getCommand("sudo").setExecutor(new CommandSudo(plugin));
-        this.getCommand("creative").setExecutor(new CommandCreative(plugin));
-        this.getCommand("survival").setExecutor(new CommandSurvival(plugin));
-        this.getCommand("list").setExecutor(new CommandList(plugin));
-
-        Bukkit.addRecipe(Items.fleshBlockRecipe());
-        Bukkit.addRecipe(Items.rottenFleshRecipe());
-        Bukkit.addRecipe(Items.pipeWithWeedRecipe());
-
-        saveDefaultConfig();
-        config.addDefault("players.default.color", "#FFFFFF");
-        saveConfig();
-
-        PluginUtil.registerGlow();
         plugin.getLogger().log(Level.INFO, "boofed up");
     }
 
     @Override
     public void onDisable() {
         plugin.getLogger().log(Level.INFO, "boofed down");
+    }
+
+    @EventHandler
+    public void onServerPing(ProxyPingEvent event) {
+        Random r = new Random();
+        int randomNumber = r.nextInt(PluginUtil.MOTDArray.length);
+        ServerPing resp = new ServerPing();
+        BaseComponent component = new ComponentBuilder()
+                .color(ChatColor.LIGHT_PURPLE)
+                .append(PluginUtil.MOTDArray[randomNumber])
+                .append("\n")
+                .color(ChatColor.AQUA)
+                .append(PluginUtil.DiscordInvite)
+                .getComponent(0);
+        resp.setDescriptionComponent(component);
+        event.setResponse(resp);
     }
 }
