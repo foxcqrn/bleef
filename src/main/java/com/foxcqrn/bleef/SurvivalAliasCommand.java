@@ -7,10 +7,10 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class SurvivalCommand extends Command {
+public class SurvivalAliasCommand extends Command {
 
-    public SurvivalCommand() {
-        super("survival");
+    public SurvivalAliasCommand() {
+        super("s");
     }
 
     public void execute(CommandSender sender, String[] args) {
@@ -21,4 +21,3 @@ public class SurvivalCommand extends Command {
         }
     }
 }
-

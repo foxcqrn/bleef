@@ -28,13 +28,16 @@ public final class Bleef extends Plugin implements Listener {
         pluginManager.registerListener(this, this);
 
         pluginManager.registerCommand(this, new CreativeCommand());
+        pluginManager.registerCommand(this, new CreativeAliasCommand());
         pluginManager.registerCommand(this, new SurvivalCommand());
+        pluginManager.registerCommand(this, new SurvivalAliasCommand());
 
         plugin.getLogger().log(Level.INFO, "boofed up");
     }
 
     @Override
     public void onDisable() {
+
         plugin.getLogger().log(Level.INFO, "boofed down");
     }
 

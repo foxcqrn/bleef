@@ -10,7 +10,7 @@ import net.md_5.bungee.api.plugin.Command;
 public class CreativeCommand extends Command {
 
     public CreativeCommand() {
-        super("Creative");
+        super("creative");
     }
 
     public void execute(CommandSender sender, String[] args) {
@@ -21,3 +21,4 @@ public class CreativeCommand extends Command {
         }
     }
 }
+

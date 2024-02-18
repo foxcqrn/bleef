@@ -7,8 +7,6 @@ commands:
   creative:
     description: 'Teleport to creative world'
     usage: '/creative'
-    aliases: [ c ]
   survival:
     description: 'Teleport to survival world'
     usage: '/survival'
-    aliases: [ s ]
