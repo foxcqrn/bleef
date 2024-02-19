@@ -1,5 +1,5 @@
 name: Bleef
-version: '1.0.8'
+version: '1.0.9'
 main: com.foxcqrn.bleef.Bleef
 api-version: 1.19
 authors: [ hotgothgirl, ashduino101 ]
@@ -20,6 +20,9 @@ commands:
   addroad:
     description: 'Create road map line'
     aliases: [ road ]
+  addborder:
+    description: 'Create border map line'
+    aliases: [ border ]
   mapline:
     description: 'Actively maps a line on the Dynmap'
     aliases: [ ml ]
