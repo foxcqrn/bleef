@@ -1,20 +1,13 @@
 package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.Bleef;
-import com.foxcqrn.bleef.Glow;
-import com.foxcqrn.bleef.Items;
-import jdk.management.jfr.ConfigurationInfo;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
@@ -23,8 +16,6 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.foxcqrn.bleef.Bleef.plugin;
 

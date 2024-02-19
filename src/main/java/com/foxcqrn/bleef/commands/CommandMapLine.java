@@ -27,6 +27,10 @@ public class CommandMapLine implements CommandExecutor {
             sender.sendMessage(PluginUtil.ErrWrongServer);
             return true;
         }
+        if (!sender.hasPermission("bleef.mapdraw")) {
+            sender.sendMessage(PluginUtil.ErrNoPerm);
+            return true;
+        }
         Player player = (Player) sender;
         UUID uuid = player.getUniqueId();
 

@@ -21,7 +21,7 @@ public class CommandAddRoad implements CommandExecutor {
             sender.sendMessage(PluginUtil.ErrWrongServer);
             return true;
         }
-        if (!sender.isOp()) {
+        if (!sender.hasPermission("bleef.mapdraw")) {
             sender.sendMessage(PluginUtil.ErrNoPerm);
             return true;
         }

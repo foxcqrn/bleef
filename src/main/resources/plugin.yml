@@ -1,5 +1,5 @@
 name: Bleef
-version: '1.0.7'
+version: '1.0.8'
 main: com.foxcqrn.bleef.Bleef
 api-version: 1.19
 authors: [ hotgothgirl, ashduino101 ]
@@ -65,3 +65,7 @@ commands:
     description: 'Unregisters the horse for a player.'
     usage: '/delhorse'
     aliases: [ ]
+permissions:
+  bleef.mapdraw:
+    description: 'Allows access to map editing commands'
+    default: op

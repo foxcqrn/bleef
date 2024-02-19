@@ -69,7 +69,7 @@ public class Items {
         ItemStack i = new ItemStack(Material.COMPASS);
         ItemMeta im = i.getItemMeta();
         assert im != null;
-        im.setDisplayName(ChatColor.WHITE + "Horse Compass");
+        im.setDisplayName(ChatColor.WHITE + "honse finder");
         im.getPersistentDataContainer().set(
                 new NamespacedKey(plugin, "BleefSpecialType"),
                 PersistentDataType.STRING, "HORSE_COMPASS"
