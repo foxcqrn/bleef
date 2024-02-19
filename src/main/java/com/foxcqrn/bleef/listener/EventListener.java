@@ -5,7 +5,6 @@ import com.foxcqrn.bleef.PluginUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
-import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -52,6 +51,11 @@ public class EventListener implements Listener {
             player.teleport(PluginUtil.SpawnLocation);
         }
         PluginUtil.updateName(player);
+        if (PluginUtil.isCreative) {
+            player.setGameMode(GameMode.CREATIVE);
+        } else {
+            player.setGameMode(GameMode.SURVIVAL);
+        }
         event.setJoinMessage(player.getDisplayName() + ChatColor.YELLOW + " has joined the game");
     }
 

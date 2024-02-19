@@ -32,7 +32,7 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("togglecoords").setExecutor(new CommandToggleCoords(plugin));
         this.getCommand("playerstats").setExecutor(new CommandPlayerStats(plugin));
         this.getCommand("housemarker").setExecutor(new CommandHouseMarker(plugin));
-        this.getCommand("cornerarray").setExecutor(new CommandCornerArray(plugin));
+        this.getCommand("addroad").setExecutor(new CommandAddRoad(plugin));
         this.getCommand("mapline").setExecutor(new CommandMapLine(plugin));
         this.getCommand("color").setExecutor(new CommandColor(plugin));
         this.getCommand("nickname").setExecutor(new CommandNickname(plugin));

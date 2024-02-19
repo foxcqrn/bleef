@@ -22,7 +22,7 @@ public class CommandSudo implements CommandExecutor {
             sender.sendMessage(PluginUtil.ErrNoPerm);
             return true;
         }
-        if (args.length == 0) {
+        if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "Usage: /sudo <username> </command|message>");
             return true;
         }
