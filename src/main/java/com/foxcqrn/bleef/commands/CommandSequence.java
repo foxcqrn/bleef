@@ -31,7 +31,7 @@ public class CommandSequence implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
         Player player = (Player) sender;
 
-        if (args.length == 0 || args[0].isEmpty()) {
+        if (sequencePlayers.contains(player.getUniqueId())) {
             sequencePlayers.remove(player.getUniqueId());
             sender.sendMessage(ChatColor.AQUA + "Stopping sequence.");
             return true;
@@ -114,115 +114,115 @@ public class CommandSequence implements CommandExecutor {
         return new Thread(sequenceProcessor);
     }
 
-    private @Nullable Instrument translateDrumKitOrElectricDrumKit(int note) {
+    private @Nullable Sound translateDrumKitOrElectricDrumKit(int note) {
         switch (note) {
             case 35:
             case 36:
-                return Instrument.BASS_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
             case 38:
             case 39:
             case 40:
-                return Instrument.SNARE_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_SNARE;
             case 42:
-                return Instrument.STICKS;
+                return Sound.BLOCK_NOTE_BLOCK_HAT;
             default:
                 return null;
         }
     }
 
-    private @Nullable Instrument translate808DrumKit(int note) {
+    private @Nullable Sound translate808DrumKit(int note) {
         switch (note) {
             case 27:
             case 28:
             case 29:
-                return Instrument.BASS_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
             case 30:
             case 31:
             case 32:
             case 33:
-                return Instrument.SNARE_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_SNARE;
             case 35:
-                return Instrument.STICKS;
+                return Sound.BLOCK_NOTE_BLOCK_HAT;
             default:
                 return null;
         }
     }
 
-    private @Nullable Instrument translate8BitDrumKit(int note) {
+    private @Nullable Sound translate8BitDrumKit(int note) {
         switch (note) {
             case 31:
-                return Instrument.BASS_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
             case 32:
             case 34:
             case 35:
             case 36:
-                return Instrument.SNARE_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_SNARE;
             case 33:
-                return Instrument.STICKS;
+                return Sound.BLOCK_NOTE_BLOCK_HAT;
             default:
                 return null;
         }
     }
 
-    private @Nullable Instrument translate2013DrumKit(int note) {
+    private @Nullable Sound translate2013DrumKit(int note) {
         switch (note) {
             case 31:
             case 32:
-                return Instrument.BASS_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
             case 33:
             case 34:
             case 35:
             case 36:
             case 56:
             case 58:
-                return Instrument.SNARE_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_SNARE;
             case 38:
-                return Instrument.STICKS;
+                return Sound.BLOCK_NOTE_BLOCK_HAT;
             default:
                 return null;
         }
     }
 
-    private @Nullable Instrument translate909DrumKit(int note) {
+    private @Nullable Sound translate909DrumKit(int note) {
         switch (note) {
             case 27:
             case 28:
             case 29:
-                return Instrument.BASS_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
             case 30:
             case 31:
             case 32:
-                return Instrument.SNARE_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_SNARE;
             case 41:
             case 42:
-                return Instrument.STICKS;
+                return Sound.BLOCK_NOTE_BLOCK_HAT;
             default:
                 return null;
         }
     }
 
-    private @Nullable Instrument translate2023DrumKit(int note) {
+    private @Nullable Sound translate2023DrumKit(int note) {
         switch (note) {
             case 25:
             case 26:
             case 27:
             case 28:
             case 29:
-                return Instrument.BASS_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
             case 30:
             case 31:
             case 32:
             case 33:
-                return Instrument.SNARE_DRUM;
+                return Sound.BLOCK_NOTE_BLOCK_SNARE;
             case 42:
             case 44:
-                return Instrument.STICKS;
+                return Sound.BLOCK_NOTE_BLOCK_HAT;
             default:
                 return null;
         }
     }
 
-    private @Nullable Instrument translateInstrument(int instrument) {
+    private @Nullable Sound translateInstrument(int instrument) {
         int baseInst = instrument % 10000;
         switch (baseInst) {
             case 1:
@@ -234,33 +234,33 @@ public class CommandSequence implements CommandExecutor {
             case 38:
             case 44:
             case 49:
-                return Instrument.GUITAR;
+                return Sound.BLOCK_NOTE_BLOCK_GUITAR;
             case 3:
             case 20:
             case 28:
             case 45:
             case 46:
             case 47:
-                return Instrument.CHIME;
+                return Sound.BLOCK_NOTE_BLOCK_CHIME;
             case 5:
             case 29:
             case 37:
             case 48:
             case 54:
-                return Instrument.BASS_GUITAR;
+                return Sound.BLOCK_NOTE_BLOCK_BASS;
             case 6:
             case 7:
             case 11:
             case 12:
             case 52:
-                return Instrument.PLING;
+                return Sound.BLOCK_NOTE_BLOCK_PLING;
             case 9:
             case 10:
             case 23:
             case 24:
             case 50:
             case 51:
-                return Instrument.FLUTE;
+                return Sound.BLOCK_NOTE_BLOCK_BIT;
             case 13:
             case 14:
             case 15:
@@ -270,12 +270,12 @@ public class CommandSequence implements CommandExecutor {
             case 55:
             case 56:
             case 57:
-                return Instrument.BIT;
+                return Sound.BLOCK_NOTE_BLOCK_BIT;
             case 19:
-                return Instrument.XYLOPHONE;
+                return Sound.BLOCK_NOTE_BLOCK_XYLOPHONE;
             case 21:
             case 34:
-                return Instrument.IRON_XYLOPHONE;
+                return Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE;
             case 2:
             case 31:
             case 39:
@@ -285,7 +285,7 @@ public class CommandSequence implements CommandExecutor {
             case 53:
                 return null;
             default:
-                return Instrument.PIANO;
+                return Sound.BLOCK_NOTE_BLOCK_HARP;
         }
     }
 
@@ -293,13 +293,13 @@ public class CommandSequence implements CommandExecutor {
         if (note.getVolume() == 0) {
             return;
         }
-        Instrument inst = translateInstrument(note.getInstrument());
-        int pitch = note.getTypeValue() + 6;
+        Sound inst = translateInstrument(note.getInstrument());
+        float pitch = (float)note.getTypeValue() + 6f;
         if (instSettings != null) {
-            pitch += Math.round(instSettings.getDetune());
+            pitch += instSettings.getDetune() / 100;
         }
         if (pitch < 0) {
-            pitch = 0;
+            pitch = 0f;
         }
         if (pitch > 24) {
             pitch = 12 + (pitch % 12);
@@ -330,13 +330,13 @@ public class CommandSequence implements CommandExecutor {
                 return;
             }
             switch (inst) {
-                case BASS_DRUM:
+                case BLOCK_NOTE_BLOCK_BASEDRUM:
                     pitch = 4;
                     break;
-                case SNARE_DRUM:
+                case BLOCK_NOTE_BLOCK_SNARE:
                     pitch = 7;
                     break;
-                case STICKS:
+                case BLOCK_NOTE_BLOCK_HAT:
                     pitch = 12;
                     break;
                 default:
@@ -344,6 +344,6 @@ public class CommandSequence implements CommandExecutor {
             }
         }
 
-        player.playNote(player.getLocation(), inst, new Note(pitch));
+        player.playSound(player.getLocation(), inst, note.getVolume(), (float)Math.pow(2.0, ((double)pitch - 12.0) / 12.0));
     }
 }
