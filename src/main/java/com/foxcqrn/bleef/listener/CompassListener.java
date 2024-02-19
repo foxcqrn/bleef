@@ -18,11 +18,15 @@ import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.foxcqrn.bleef.Bleef.plugin;
 
 public class CompassListener implements Listener {
     @EventHandler
@@ -35,7 +39,14 @@ public class CompassListener implements Listener {
         }
         // can't use isSimilar here due to the lodestone metadata
         if (item.getType() == Material.COMPASS &&
-                item.containsEnchantment(new Glow(new NamespacedKey(Bleef.plugin, "glow")))) {
+                Objects.equals(Objects.requireNonNull(item.getItemMeta())
+                        .getPersistentDataContainer()
+                        .get(
+                                new NamespacedKey(plugin, "BleefSpecialType"),
+                                PersistentDataType.STRING
+                        ), "HORSE_COMPASS"
+                )
+        ) {
             CompassMeta meta = getCompassMeta(item, player);
             if (meta == null) {
                 return;

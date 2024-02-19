@@ -8,6 +8,7 @@ import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import static com.foxcqrn.bleef.Bleef.plugin;
 
@@ -66,11 +67,13 @@ public class Items {
 
     public static ItemStack getHorseCompassItem() {
         ItemStack i = new ItemStack(Material.COMPASS);
-        Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
         ItemMeta im = i.getItemMeta();
         assert im != null;
         im.setDisplayName(ChatColor.WHITE + "Horse Compass");
-        im.addEnchant(glow, 1, true);
+        im.getPersistentDataContainer().set(
+                new NamespacedKey(plugin, "BleefSpecialType"),
+                PersistentDataType.STRING, "HORSE_COMPASS"
+        );
         i.setItemMeta(im);
         return i;
     }
