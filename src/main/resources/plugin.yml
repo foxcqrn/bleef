@@ -1,5 +1,5 @@
 name: Bleef
-version: '1.0.1'
+version: '1.0.6'
 main: com.foxcqrn.bleef.Bleef
 api-version: 1.19
 authors: [ hotgothgirl, ashduino101 ]
@@ -46,3 +46,7 @@ commands:
   speed:
     description: 'Set movement speed'
     usage: '/speed <value>'
+  teleport:
+    description: 'Teleport to a server member'
+    usage: '/teleport <username>'
+    aliases: [ tp ]

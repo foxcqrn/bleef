@@ -26,6 +26,7 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new AfkListener(), plugin);
         pm.registerEvents(new WeedListener(), plugin);
         pm.registerEvents(new LeashListener(), plugin);
+        if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
         this.getCommand("afk").setExecutor(new CommandAfk(plugin));
         this.getCommand("togglecoords").setExecutor(new CommandToggleCoords(plugin));
@@ -39,6 +40,7 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("survival").setExecutor(new CommandSurvival(plugin));
         this.getCommand("list").setExecutor(new CommandList(plugin));
         this.getCommand("speed").setExecutor(new CommandSpeed(plugin));
+        this.getCommand("teleport").setExecutor(new CommandTeleport(plugin));
 
         Bukkit.addRecipe(Items.fleshBlockRecipe());
         Bukkit.addRecipe(Items.rottenFleshRecipe());

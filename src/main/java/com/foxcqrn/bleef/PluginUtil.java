@@ -23,6 +23,7 @@ public class PluginUtil {
     public static String ErrNoPerm = ChatColor.RED + "You do not have permission to run this command.";
     public static String ErrNoConsole = ChatColor.RED + "Only players may run this command.";
     public static String ErrWrongServer = ChatColor.RED + "You can't use that command on this server.";
+    public static String ErrNoPlayer = ChatColor.RED + "That is not a valid player.";
     private static final String AFKPrefix = ChatColor.GRAY + "" + ChatColor.ITALIC + "[AFK] ";
     public static String DiscordInvite = "https://discord.gg/8zZapcP7fV";
     public static String[] MOTDArray = new String[]{

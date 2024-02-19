@@ -186,11 +186,4 @@ public class EventListener implements Listener {
             Bukkit.getScheduler().runTask(plugin, () -> p.getInventory().setHelmet(cursor));
         }
     }
-
-    @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event) {
-        if (PluginUtil.isCreative) {
-            event.getItemDrop().remove();
-        }
-    }
 }

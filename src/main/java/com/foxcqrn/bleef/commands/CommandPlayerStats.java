@@ -22,23 +22,22 @@ public class CommandPlayerStats implements CommandExecutor {
         }
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /playerstats <username>");
-        } else {
-            Player player = Bukkit.getPlayer(args[0]);
-            if (player != null) {
-                sender.sendMessage(ChatColor.GOLD + "Showing information for player \"" + player.getName() + "\":");
-                sender.sendMessage(
-                             ChatColor.GOLD + "\nNickname: " + PluginUtil.getNickname(player) +
-                                ChatColor.GOLD + "\nHealth: " + ChatColor.WHITE + player.getHealth() +
-                                ChatColor.GOLD + "\nFood: " + ChatColor.WHITE + player.getFoodLevel() +
-                                ChatColor.GOLD + "\nIP Address: " + ChatColor.WHITE + player.getAddress().toString().trim() +
-                                ChatColor.GOLD + "\nUUID: " + ChatColor.WHITE + player.getUniqueId() +
-                                ChatColor.GOLD + "\nLocation: " + ChatColor.WHITE + player.getLocation() +
-                                ChatColor.GOLD + "\nGamemode: " + ChatColor.WHITE + player.getGameMode()
-                );
-            } else {
-                sender.sendMessage(ChatColor.RED + "That is not a valid player.");
-            }
         }
+        Player player = Bukkit.getPlayer(args[0]);
+        if (player == null) {
+            sender.sendMessage(PluginUtil.ErrNoPlayer);
+            return true;
+        }
+        sender.sendMessage(ChatColor.GOLD + "Showing information for player \"" + player.getName() + "\":");
+        sender.sendMessage(
+                     ChatColor.GOLD + "\nNickname: " + PluginUtil.getNickname(player) +
+                        ChatColor.GOLD + "\nHealth: " + ChatColor.WHITE + player.getHealth() +
+                        ChatColor.GOLD + "\nFood: " + ChatColor.WHITE + player.getFoodLevel() +
+                        ChatColor.GOLD + "\nIP Address: " + ChatColor.WHITE + player.getAddress().toString().trim() +
+                        ChatColor.GOLD + "\nUUID: " + ChatColor.WHITE + player.getUniqueId() +
+                        ChatColor.GOLD + "\nLocation: " + ChatColor.WHITE + player.getLocation() +
+                        ChatColor.GOLD + "\nGamemode: " + ChatColor.WHITE + player.getGameMode()
+        );
         return true;
     }
 }
