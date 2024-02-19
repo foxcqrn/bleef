@@ -21,8 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandSequence implements CommandExecutor {
-    HashSet<UUID> mappingPlayers = new HashSet<>();
-    HashMap<UUID, LineMapData> mappingData = new HashMap<>();
+    HashSet<UUID> sequencePlayers = new HashSet<>();
 
     public CommandSequence(Bleef plugin) {
         Bleef.plugin = plugin;
@@ -33,18 +32,19 @@ public class CommandSequence implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length == 0 || args[0].isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "Usage: /speed <value|reset>");
+            sequencePlayers.remove(player.getUniqueId());
+            sender.sendMessage(ChatColor.AQUA + "Stopping sequence.");
             return true;
         }
-        int sequenceId = 0;
-        if (!args[0].equals("stop")) {
-            try {
-                sequenceId = Integer.parseInt(args[0]);
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Sequence ID must be an integer.");
-                return true;
-            }
+        int sequenceId;
+        try {
+            sequenceId = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "Sequence ID must be an integer.");
+            return true;
         }
+
+        sequencePlayers.add(player.getUniqueId());
 
         Thread thread = getThread(player, sequenceId);
         thread.start();
@@ -54,9 +54,8 @@ public class CommandSequence implements CommandExecutor {
 
     private Thread getThread(Player player, int sequenceId) {
         Runnable sequenceProcessor = () -> {
-
             String urlStr = String.format("https://onlinesequencer.net/app/api/get_proto.php?id=%d", sequenceId);
-            URL url = null;
+            URL url;
             try {
                 url = new URL(urlStr);
             } catch (MalformedURLException e) {
@@ -94,6 +93,9 @@ public class CommandSequence implements CommandExecutor {
                 float sleepTime = 1f / ((bpm  * 4f) / 60f) * 1000f;
                 player.sendMessage(ChatColor.AQUA + "Playing sequence " + sequenceId);
                 notes.forEach((SequenceProto.Note note) -> {
+                    if (!sequencePlayers.contains(player.getUniqueId())) {
+                        return;
+                    }
                     float time = note.getTime();
                     if (time > lastTime.get()) {
                         try {
