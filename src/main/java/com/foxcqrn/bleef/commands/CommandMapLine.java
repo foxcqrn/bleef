@@ -69,7 +69,7 @@ public class CommandMapLine implements CommandExecutor {
             Thread.currentThread().setName(String.format("Mapline Thread for %s", player.getUniqueId()));
             while (mappingPlayers.contains(uuid)) {
                 data.add(player.getLocation());
-                data.subList(data.size() - 101, data.size() - 1).forEach((Location loc) -> {
+                data.subList(Math.max(data.size() - 101, 0), Math.max(data.size() - 1, 0)).forEach((Location loc) -> {
                    Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.DUST_COLOR_TRANSITION, loc, 50, dustTransition);
                 });
                 try {
