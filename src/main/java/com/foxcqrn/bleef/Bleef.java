@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public final class Bleef extends JavaPlugin {
@@ -26,6 +27,7 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new AfkListener(), plugin);
         pm.registerEvents(new WeedListener(), plugin);
         pm.registerEvents(new LeashListener(), plugin);
+        pm.registerEvents(new CompassListener(), plugin);
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
         this.getCommand("afk").setExecutor(new CommandAfk(plugin));
@@ -43,13 +45,17 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("speed").setExecutor(new CommandSpeed(plugin));
         this.getCommand("teleport").setExecutor(new CommandTeleport(plugin));
         this.getCommand("sequence").setExecutor(new CommandSequence(plugin));
+        this.getCommand("addhorse").setExecutor(new CommandAddHorse(plugin));
+        this.getCommand("delhorse").setExecutor(new CommandDelHorse(plugin));
 
         Bukkit.addRecipe(Items.fleshBlockRecipe());
         Bukkit.addRecipe(Items.rottenFleshRecipe());
         Bukkit.addRecipe(Items.pipeWithWeedRecipe());
+        Bukkit.addRecipe(Items.horseCompassRecipe());
 
         config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");
+        config.addDefault("players.horses", new ArrayList<String>());
         saveDefaultConfig();
         saveConfig();
 
@@ -61,5 +67,7 @@ public final class Bleef extends JavaPlugin {
     @Override
     public void onDisable() {
         plugin.getLogger().log(Level.INFO, "boofed down");
+        saveDefaultConfig();
+        saveConfig();
     }
 }

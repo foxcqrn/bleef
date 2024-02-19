@@ -63,4 +63,25 @@ public class Items {
         pipeRecipe.addIngredient(Material.DRIED_KELP_BLOCK);
         return pipeRecipe;
     }
+
+    public static ItemStack getHorseCompassItem() {
+        ItemStack i = new ItemStack(Material.COMPASS);
+        Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
+        ItemMeta im = i.getItemMeta();
+        assert im != null;
+        im.setDisplayName(ChatColor.WHITE + "Horse Compass");
+        im.addEnchant(glow, 1, true);
+        i.setItemMeta(im);
+        return i;
+    }
+
+    public static ShapedRecipe horseCompassRecipe() {
+        NamespacedKey horseCompassKey = new NamespacedKey(plugin, "horse_compass");
+        ShapedRecipe horseCompassRecipe = new ShapedRecipe(horseCompassKey, getHorseCompassItem());
+        horseCompassRecipe.shape(" i ", "iri", " l ");
+        horseCompassRecipe.setIngredient('i', Material.IRON_INGOT);
+        horseCompassRecipe.setIngredient('r', Material.REDSTONE);
+        horseCompassRecipe.setIngredient('l', Material.LEATHER);
+        return horseCompassRecipe;
+    }
 }

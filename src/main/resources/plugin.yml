@@ -54,6 +54,14 @@ commands:
     usage: '/teleport <username>'
     aliases: [ tp ]
   sequence:
-    description: 'todo'
+    description: 'Plays an OnlineSequencer sequence in-game.'
     usage: '/sequence <sequence_id|stop>'
     aliases: []
+  addhorse:
+    description: 'Registers the horse a player is riding to the player.'
+    usage: '/addhorse'
+    aliases: [ ]
+  delhorse:
+    description: 'Unregisters the horse for a player.'
+    usage: '/delhorse'
+    aliases: [ ]
