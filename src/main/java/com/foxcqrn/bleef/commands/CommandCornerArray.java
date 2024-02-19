@@ -17,6 +17,10 @@ public class CommandCornerArray implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
+        if (PluginUtil.isCreative) {
+            sender.sendMessage(PluginUtil.ErrWrongServer);
+            return true;
+        }
         Player player = (Player) sender;
         Location location = player.getLocation();
         int y = location.getBlockY();

@@ -1,9 +1,9 @@
 name: Bleef
-version: '${project.version}'
+version: '1.0.1'
 main: com.foxcqrn.bleef.Bleef
 api-version: 1.19
-authors: [ hotgothgirl, foxcqrn ]
-description: core plugin for Backslash smp server
+authors: [ hotgothgirl, ashduino101 ]
+description: core plugin for Backslash server network
 commands:
   afk:
     description: 'Toggle AFK status'
@@ -43,3 +43,6 @@ commands:
     description: 'Lists server members'
     usage: '/list'
     aliases: [ online ]
+  speed:
+    description: 'Set movement speed'
+    usage: '/speed <value>'

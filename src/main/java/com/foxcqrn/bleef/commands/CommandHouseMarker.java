@@ -17,6 +17,10 @@ public class CommandHouseMarker implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
+        if (PluginUtil.isCreative) {
+            sender.sendMessage(PluginUtil.ErrWrongServer);
+            return true;
+        }
         Player player = (Player) sender;
         String name = sender.getName();
         if (sender.isOp() && args.length == 2) name = args[1];

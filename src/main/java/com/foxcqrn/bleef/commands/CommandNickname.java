@@ -24,12 +24,12 @@ public class CommandNickname implements CommandExecutor {
             return true;
         }
 
-        Player player = (Player) sender;
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /nickname <name>");
             return true;
         }
 
+        Player player = (Player) sender;
         FileConfiguration config = plugin.getConfig();
         String nickname = String.join(" ", args);
         config.set("players." + player.getUniqueId() + ".nickname", nickname);

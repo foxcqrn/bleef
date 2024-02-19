@@ -46,7 +46,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getOnlinePlayers().forEach((online) -> online.setPlayerListHeaderFooter("\n" + ChatColor.LIGHT_PURPLE + "survival building server" + "\n", "\nPlayers online: " + ChatColor.YELLOW + Bukkit.getOnlinePlayers().size() + "\n"));
+        PluginUtil.updateTabList(false);
         if (!player.hasPlayedBefore()) {
             Bukkit.broadcastMessage(ChatColor.AQUA + "Welcome to the server, " + player.getName() + "!");
             player.teleport(PluginUtil.SpawnLocation);
@@ -58,7 +58,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getOnlinePlayers().forEach((online) -> online.setPlayerListHeaderFooter("\n" + ChatColor.LIGHT_PURPLE + "survival building server" + "\n", "\nPlayers online: " + ChatColor.YELLOW + (Bukkit.getOnlinePlayers().size() - 1) + "\n"));
+        PluginUtil.updateTabList(true);
         event.setQuitMessage(player.getDisplayName() + ChatColor.YELLOW + " has left the game");
     }
 
@@ -73,7 +73,8 @@ public class EventListener implements Listener {
         int wb = PluginUtil.WorldBorder;
         boolean fromInsideBorder = x1 < wb && x1 > -wb && z1 < wb && z1 > -wb;
         boolean toOutsideBorder = x2 >= wb || x2 <= -wb || z2 >= wb || z2 <= -wb;
-        if (fromInsideBorder && toOutsideBorder) {
+        // survival world border
+        if (fromInsideBorder && toOutsideBorder && !PluginUtil.isCreative) {
             event.setCancelled(true);
             player.sendMessage(ChatColor.AQUA + "You have reached the world border. You cannot go past this point.");
         }
@@ -139,12 +140,10 @@ public class EventListener implements Listener {
 
         if (item == null) return;
 
-        // disable fireworks for elytra flight
-        if (item.getType() == Material.FIREWORK_ROCKET) {
-            if (player.isGliding()) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "Rocket powered elytra flight is disabled on this server.");
-            }
+        // disable fireworks for elytra flight in survival
+        if (item.getType() == Material.FIREWORK_ROCKET && player.isGliding() && !PluginUtil.isCreative) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "Rocket powered elytra flight is disabled on this server.");
         }
 
         // rotten flesh block action
@@ -185,6 +184,13 @@ public class EventListener implements Listener {
         if (item.getType() == Material.AIR && cursor.getType() != Material.AIR) {
             p.setItemOnCursor(null);
             Bukkit.getScheduler().runTask(plugin, () -> p.getInventory().setHelmet(cursor));
+        }
+    }
+
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        if (PluginUtil.isCreative) {
+            event.getItemDrop().remove();
         }
     }
 }

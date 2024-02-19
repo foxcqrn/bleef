@@ -38,13 +38,15 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("creative").setExecutor(new CommandCreative(plugin));
         this.getCommand("survival").setExecutor(new CommandSurvival(plugin));
         this.getCommand("list").setExecutor(new CommandList(plugin));
+        this.getCommand("speed").setExecutor(new CommandSpeed(plugin));
 
         Bukkit.addRecipe(Items.fleshBlockRecipe());
         Bukkit.addRecipe(Items.rottenFleshRecipe());
         Bukkit.addRecipe(Items.pipeWithWeedRecipe());
 
-        saveDefaultConfig();
+        config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");
+        saveDefaultConfig();
         saveConfig();
 
         PluginUtil.registerGlow();

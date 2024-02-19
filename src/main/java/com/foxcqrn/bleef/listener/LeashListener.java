@@ -33,6 +33,7 @@ public class LeashListener implements Listener {
             if(!lead.isPresent()) return;
             lead.get().remove();
 
+            living.eject();
             living.teleport(holder);
             living.setLeashHolder(holder);
         });

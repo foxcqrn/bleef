@@ -23,7 +23,7 @@ public class CommandSudo implements CommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /sudo <username> <command>");
+            sender.sendMessage(ChatColor.RED + "Usage: /sudo <username> </command|message>");
             return true;
         }
         Player player = Bukkit.getPlayer(args[0]);
@@ -32,7 +32,12 @@ public class CommandSudo implements CommandExecutor {
             return true;
         }
         String command = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-        Bukkit.dispatchCommand(player, command);
+        if (command.startsWith("/")) {
+            Bukkit.dispatchCommand(player, command.substring(1));
+        } else {
+            player.chat(command);
+        }
+
         return true;
     }
 }

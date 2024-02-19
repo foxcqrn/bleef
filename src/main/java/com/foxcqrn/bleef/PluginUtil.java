@@ -1,9 +1,9 @@
 package com.foxcqrn.bleef;
 
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -15,13 +15,14 @@ import static com.foxcqrn.bleef.Bleef.plugin;
 
 public class PluginUtil {
     static FileConfiguration config = plugin.getConfig();
+    public static boolean isCreative = config.getBoolean("creative");
     public static ArrayList<String> AFKList = new ArrayList<>();
     public static ArrayList<String> ToggleCoords = new ArrayList<>();
     public static Location SpawnLocation = new Location(Bukkit.getWorld("world"), 222.50, 73.00, -185.50, 180, 5);
     public static int WorldBorder = 5000;
     public static String ErrNoPerm = ChatColor.RED + "You do not have permission to run this command.";
     public static String ErrNoConsole = ChatColor.RED + "Only players may run this command.";
-    public static String ErrWrongWorld = ChatColor.RED + "You can't use that command in this world.";
+    public static String ErrWrongServer = ChatColor.RED + "You can't use that command on this server.";
     private static final String AFKPrefix = ChatColor.GRAY + "" + ChatColor.ITALIC + "[AFK] ";
     public static String DiscordInvite = "https://discord.gg/8zZapcP7fV";
     public static String[] MOTDArray = new String[]{
@@ -81,21 +82,19 @@ public class PluginUtil {
         return net.md_5.bungee.api.ChatColor.of(hex);
     }
 
-    public static TextComponent showName(Player player) {
-        net.md_5.bungee.api.ChatColor color = getColor(player);
-
-        TextComponent tc = new TextComponent(color + "*" + getNickname(player));
-        HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(player.getName()));
-        tc.setHoverEvent(he);
-
-        return tc;
-    }
-
     public static void updateName(Player player) {
         String name = getNickname(player);
         net.md_5.bungee.api.ChatColor color = getColor(player);
         player.setDisplayName(color + name);
         player.setPlayerListName(color + name);
+    }
+
+    public static void updateTabList(boolean playerQuit) {
+        int count = Bukkit.getOnlinePlayers().size();
+        Bukkit.getOnlinePlayers().forEach((online) -> online.setPlayerListHeaderFooter(
+                "\n" + ChatColor.LIGHT_PURPLE + (PluginUtil.isCreative ? "creative" : "survival") +" building server" + "\n",
+                "\nPlayers online: " + ChatColor.AQUA + (playerQuit ? count-1 : count) + "\n")
+        );
     }
 
     public static void registerGlow() {
@@ -110,8 +109,6 @@ public class PluginUtil {
         try {
             Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
             Enchantment.registerEnchantment(glow);
-        }
-        catch (IllegalArgumentException e){
         }
         catch(Exception e){
             e.printStackTrace();
