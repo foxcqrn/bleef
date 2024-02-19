@@ -13,16 +13,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
-class LineMapData {
-    public LineMapData() {
-        savedPoints = new ArrayList<>();
-    }
-    public List<Location> savedPoints;
-}
-
 public class CommandMapLine implements CommandExecutor {
     HashSet<UUID> mappingPlayers = new HashSet<>();
-    HashMap<UUID, LineMapData> mappingData = new HashMap<>();
+    HashMap<UUID, List<Location>> mappingData = new HashMap<>();
 
     public CommandMapLine(Bleef plugin) {
         Bleef.plugin = plugin;
@@ -40,8 +33,8 @@ public class CommandMapLine implements CommandExecutor {
         if (mappingPlayers.contains(uuid)) {
             mappingPlayers.remove(player.getUniqueId());
             player.sendMessage(ChatColor.AQUA + "Tracing finished. Adding corners...");
-            LineMapData data = mappingData.get(uuid);
-            data.savedPoints.forEach((Location loc) -> {
+            List<Location> data = mappingData.get(uuid);
+            data.forEach((Location loc) -> {
                 Bukkit.dispatchCommand(
                         sender,
                         "dmarker addcorner " +
@@ -54,7 +47,7 @@ public class CommandMapLine implements CommandExecutor {
             return true;
         } else {
             mappingPlayers.add(uuid);
-            mappingData.put(uuid, new LineMapData());
+            mappingData.put(uuid, new ArrayList<>());
 //            Bukkit.dispatchCommand(sender, "dmarker clearcorners");
             player.sendMessage(ChatColor.AQUA + "Tracing started.");
         }
@@ -72,11 +65,11 @@ public class CommandMapLine implements CommandExecutor {
 
     private Thread getThread(Player player, UUID uuid, DustTransition dustTransition) {
         Runnable tracerRunnable = () -> {
-            LineMapData data = mappingData.get(uuid);
+            List<Location> data = mappingData.get(uuid);
             Thread.currentThread().setName(String.format("Mapline Thread for %s", player.getUniqueId()));
             while (mappingPlayers.contains(uuid)) {
-                data.savedPoints.add(player.getLocation());
-                data.savedPoints.forEach((Location loc) -> {
+                data.add(player.getLocation());
+                data.forEach((Location loc) -> {
                    Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.DUST_COLOR_TRANSITION, loc, 50, dustTransition);
                 });
                 try {
