@@ -50,6 +50,7 @@ public final class Bleef extends JavaPlugin {
         saveConfig();
 
         PluginUtil.registerGlow();
+        if (PluginUtil.isCreative) plugin.getLogger().log(Level.WARNING, "Plugin running in creative mode! Set creative: false in config.yml if this is an error.");
         plugin.getLogger().log(Level.INFO, "boofed up");
     }
 
