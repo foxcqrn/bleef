@@ -33,6 +33,7 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("playerstats").setExecutor(new CommandPlayerStats(plugin));
         this.getCommand("housemarker").setExecutor(new CommandHouseMarker(plugin));
         this.getCommand("cornerarray").setExecutor(new CommandCornerArray(plugin));
+        this.getCommand("mapline").setExecutor(new CommandMapLine(plugin));
         this.getCommand("color").setExecutor(new CommandColor(plugin));
         this.getCommand("nickname").setExecutor(new CommandNickname(plugin));
         this.getCommand("sudo").setExecutor(new CommandSudo(plugin));
@@ -41,6 +42,7 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("list").setExecutor(new CommandList(plugin));
         this.getCommand("speed").setExecutor(new CommandSpeed(plugin));
         this.getCommand("teleport").setExecutor(new CommandTeleport(plugin));
+        this.getCommand("sequence").setExecutor(new CommandSequence(plugin));
 
         Bukkit.addRecipe(Items.fleshBlockRecipe());
         Bukkit.addRecipe(Items.rottenFleshRecipe());

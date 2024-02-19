@@ -20,6 +20,9 @@ commands:
   cornerarray:
     description: 'Add multiple coordinates to the dynmap corner list at once'
     aliases: [ ca ]
+  mapline:
+    description: 'Actively maps a line on the Dynmap'
+    aliases: [ ml ]
   color:
     description: 'Set custom name hex color'
     usage: '/color <#hex>'
@@ -50,3 +53,7 @@ commands:
     description: 'Teleport to a server member'
     usage: '/teleport <username>'
     aliases: [ tp ]
+  sequence:
+    description: 'todo'
+    usage: '/sequence <sequence_id|stop>'
+    aliases: []
