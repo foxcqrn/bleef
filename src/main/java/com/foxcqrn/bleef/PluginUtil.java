@@ -1,15 +1,19 @@
 package com.foxcqrn.bleef;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
+import org.bukkit.block.Banner;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.type.WallHangingSign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.foxcqrn.bleef.Bleef.plugin;
 
@@ -53,6 +57,17 @@ public class PluginUtil {
             "bonked",
             "schlozzed",
             "schmabbed"
+    };
+    public static Material[] WrenchBlacklist = new Material[]{
+            Material.WALL_TORCH,
+            Material.NETHER_PORTAL,
+            Material.END_PORTAL_FRAME,
+            Material.POINTED_DRIPSTONE,
+            Material.GLOW_LICHEN,
+            Material.VINE,
+            Material.SCULK_VEIN,
+            Material.LADDER,
+            Material.TRIPWIRE_HOOK,
     };
 
     public static boolean isAFK(Player player) {
@@ -118,4 +133,19 @@ public class PluginUtil {
         }
     }
 
+    public static void setDataType(ItemMeta im, String key) {
+        im.getPersistentDataContainer().set(
+                new NamespacedKey(plugin, "BleefSpecialType"),
+                PersistentDataType.STRING, key
+        );
+    }
+
+    public static String getDataType(ItemMeta im) {
+        return Objects.requireNonNull(im)
+                .getPersistentDataContainer()
+                .get(
+                        new NamespacedKey(plugin, "BleefSpecialType"),
+                        PersistentDataType.STRING
+                );
+    }
 }

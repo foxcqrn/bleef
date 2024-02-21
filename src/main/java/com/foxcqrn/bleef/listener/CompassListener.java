@@ -1,8 +1,8 @@
 package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.Bleef;
+import com.foxcqrn.bleef.PluginUtil;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -11,13 +11,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.foxcqrn.bleef.Bleef.plugin;
 
 public class CompassListener implements Listener {
     @EventHandler
@@ -29,15 +27,7 @@ public class CompassListener implements Listener {
             return;
         }
         // can't use isSimilar here due to the lodestone metadata
-        if (item.getType() == Material.COMPASS &&
-                Objects.equals(Objects.requireNonNull(item.getItemMeta())
-                        .getPersistentDataContainer()
-                        .get(
-                                new NamespacedKey(plugin, "BleefSpecialType"),
-                                PersistentDataType.STRING
-                        ), "HORSE_COMPASS"
-                )
-        ) {
+        if (item.getType() == Material.COMPASS && "HORSE_COMPASS".equals(PluginUtil.getDataType(item.getItemMeta()))) {
             CompassMeta meta = getCompassMeta(item, player);
             if (meta == null) {
                 return;

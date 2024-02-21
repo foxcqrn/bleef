@@ -1,5 +1,5 @@
 name: Bleef
-version: '1.0.9'
+version: '1.0.11'
 main: com.foxcqrn.bleef.Bleef
 api-version: 1.19
 authors: [ hotgothgirl, ashduino101 ]
@@ -63,12 +63,28 @@ commands:
   addhorse:
     description: 'Registers the horse a player is riding to the player.'
     usage: '/addhorse'
-    aliases: [ ]
   delhorse:
     description: 'Unregisters the horse for a player.'
     usage: '/delhorse'
-    aliases: [ ]
+  map:
+    description: 'Show map link'
+    usage: '/map'
+  wrench:
+    description: 'Get a wrench'
+    usage: '/wrench'
+    aliases: [ givewrench ]
 permissions:
   bleef.mapdraw:
     description: 'Allows access to map editing commands'
     default: op
+  bleef.wrench.*:
+    description: 'Gives full wrench permission'
+    default: false
+    children:
+      bleef.wrench.give: true
+      bleef.wrench.bypass: true
+  bleef.wrench.give:
+    description: 'Allows access to /wrench'
+    default: op
+  bleef.wrench.bypass:
+    description: 'Bypass wrench block blacklist'

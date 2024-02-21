@@ -1,24 +1,39 @@
 package com.foxcqrn.bleef;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import static com.foxcqrn.bleef.Bleef.plugin;
 
-
 public class Items {
+    private static final Recipe[] recipes = new Recipe[]{
+            fleshBlockRecipe(),
+            rottenFleshRecipe(),
+            pipeWithWeedRecipe(),
+            horseCompassRecipe(),
+            wrenchRecipe(),
+    };
+    public static void add() {
+        for (Recipe r : recipes) {
+            Bukkit.addRecipe(r);
+        }
+    }
+    public static void remove() {
+        for (Recipe r : recipes) {
+            Bukkit.removeRecipe(new NamespacedKey(plugin, PluginUtil.getDataType(r.getResult().getItemMeta())));
+        }
+    }
 
     public static ItemStack getPipeItem() {
         ItemStack i = new ItemStack(Material.GOAT_HORN);
         ItemMeta im = i.getItemMeta();
+        assert im != null;
         im.setDisplayName(ChatColor.YELLOW + "Pipe");
+        PluginUtil.setDataType(im, "PIPE");
         i.setItemMeta(im);
         return i;
     }
@@ -27,8 +42,10 @@ public class Items {
         ItemStack i = new ItemStack(Material.GOAT_HORN);
         ItemMeta im = i.getItemMeta();
         Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
+        assert im != null;
         im.setDisplayName(ChatColor.GREEN + "Pipe with Weed");
         im.addEnchant(glow, 1, true);
+        PluginUtil.setDataType(im, "WEED_PIPE");
         i.setItemMeta(im);
         return i;
     }
@@ -36,7 +53,9 @@ public class Items {
     public static ItemStack getRottenFleshBlockItem() {
         ItemStack i = new ItemStack(Material.NETHERRACK);
         ItemMeta im = i.getItemMeta();
+        assert im != null;
         im.setDisplayName(ChatColor.WHITE + "Block of Rotten Flesh");
+        PluginUtil.setDataType(im, "FLESH_BLOCK");
         i.setItemMeta(im);
         return i;
     }
@@ -70,10 +89,7 @@ public class Items {
         ItemMeta im = i.getItemMeta();
         assert im != null;
         im.setDisplayName(ChatColor.WHITE + "honse finder");
-        im.getPersistentDataContainer().set(
-                new NamespacedKey(plugin, "BleefSpecialType"),
-                PersistentDataType.STRING, "HORSE_COMPASS"
-        );
+        PluginUtil.setDataType(im, "HORSE_COMPASS");
         i.setItemMeta(im);
         return i;
     }
@@ -86,5 +102,23 @@ public class Items {
         horseCompassRecipe.setIngredient('r', Material.REDSTONE);
         horseCompassRecipe.setIngredient('l', Material.LEATHER);
         return horseCompassRecipe;
+    }
+
+    public static ItemStack getWrenchItem() {
+        ItemStack i = new ItemStack(Material.TRIPWIRE_HOOK);
+        ItemMeta im = i.getItemMeta();
+        assert im != null;
+        im.setDisplayName(ChatColor.WHITE + "Wrench");
+        PluginUtil.setDataType(im, "WRENCH");
+        i.setItemMeta(im);
+        return i;
+    }
+
+    public static ShapelessRecipe wrenchRecipe() {
+        NamespacedKey wrenchKey = new NamespacedKey(plugin, "wrench");
+        ShapelessRecipe wrenchRecipe = new ShapelessRecipe(wrenchKey, getWrenchItem());
+        wrenchRecipe.addIngredient(Material.IRON_INGOT);
+        wrenchRecipe.addIngredient(Material.IRON_NUGGET);
+        return wrenchRecipe;
     }
 }

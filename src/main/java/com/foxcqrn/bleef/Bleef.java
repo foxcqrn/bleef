@@ -28,6 +28,7 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new WeedListener(), plugin);
         pm.registerEvents(new LeashListener(), plugin);
         pm.registerEvents(new CompassListener(), plugin);
+        pm.registerEvents(new WrenchListener(), plugin);
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
         this.getCommand("afk").setExecutor(new CommandAfk(plugin));
@@ -48,11 +49,8 @@ public final class Bleef extends JavaPlugin {
         this.getCommand("sequence").setExecutor(new CommandSequence(plugin));
         this.getCommand("addhorse").setExecutor(new CommandAddHorse(plugin));
         this.getCommand("delhorse").setExecutor(new CommandDelHorse(plugin));
-
-        Bukkit.addRecipe(Items.fleshBlockRecipe());
-        Bukkit.addRecipe(Items.rottenFleshRecipe());
-        Bukkit.addRecipe(Items.pipeWithWeedRecipe());
-        Bukkit.addRecipe(Items.horseCompassRecipe());
+        this.getCommand("map").setExecutor(new CommandMap(plugin));
+        this.getCommand("wrench").setExecutor(new CommandWrench(plugin));
 
         config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");
@@ -60,15 +58,18 @@ public final class Bleef extends JavaPlugin {
         saveDefaultConfig();
         saveConfig();
 
+        Items.add();
         PluginUtil.registerGlow();
+
         if (PluginUtil.isCreative) plugin.getLogger().log(Level.WARNING, "Plugin running in creative mode! Set creative: false in config.yml if this is an error.");
         plugin.getLogger().log(Level.INFO, "boofed up");
     }
 
     @Override
     public void onDisable() {
-        plugin.getLogger().log(Level.INFO, "boofed down");
         saveDefaultConfig();
         saveConfig();
+        Items.remove();
+        plugin.getLogger().log(Level.INFO, "boofed down");
     }
 }
