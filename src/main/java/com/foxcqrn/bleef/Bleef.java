@@ -2,7 +2,6 @@ package com.foxcqrn.bleef;
 
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
