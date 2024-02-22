@@ -1,6 +1,7 @@
 package com.foxcqrn.bleef;
 
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -65,6 +66,26 @@ public class PluginUtil {
             Material.TRIPWIRE_HOOK,
             Material.PISTON_HEAD,
             Material.BELL
+    };
+    public static BlockFace[] clockwiseFaces = new BlockFace[] {
+            BlockFace.UP,
+            BlockFace.NORTH,
+            BlockFace.NORTH_NORTH_EAST,
+            BlockFace.NORTH_EAST,
+            BlockFace.EAST_NORTH_EAST,
+            BlockFace.EAST,
+            BlockFace.EAST_SOUTH_EAST,
+            BlockFace.SOUTH_EAST,
+            BlockFace.SOUTH_SOUTH_EAST,
+            BlockFace.SOUTH,
+            BlockFace.SOUTH_SOUTH_WEST,
+            BlockFace.SOUTH_WEST,
+            BlockFace.WEST_SOUTH_WEST,
+            BlockFace.WEST,
+            BlockFace.WEST_NORTH_WEST,
+            BlockFace.NORTH_WEST,
+            BlockFace.NORTH_NORTH_WEST,
+            BlockFace.DOWN,
     };
 
     public static boolean isAFK(Player player) {

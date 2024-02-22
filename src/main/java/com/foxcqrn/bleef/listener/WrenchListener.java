@@ -18,9 +18,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.Comparator;
 
 public class WrenchListener implements Listener {
 
@@ -44,7 +43,6 @@ public class WrenchListener implements Listener {
                 data instanceof RedstoneWallTorch ||
                 data instanceof Bed ||
                 data instanceof CoralWallFan ||
-                state instanceof Skull ||
                 state instanceof Banner ||
                 (data instanceof Piston && ((Piston) data).isExtended())) {
                 player.sendMessage(ChatColor.RED + "You can't rotate that block.");
@@ -59,38 +57,46 @@ public class WrenchListener implements Listener {
         }
 
         BlockData data = target.getBlockData();
-        if (data instanceof Rotatable || data instanceof Directional || data instanceof Orientable) {
-            List<? extends Enum<?>> rotations;
-            Enum facing;
-
-            if (data instanceof Rotatable) {
-                rotations = new ArrayList<>(Arrays.asList(BlockFace.values()));
-                rotations.remove(BlockFace.SELF);
-                rotations.remove(BlockFace.UP);
-                rotations.remove(BlockFace.DOWN);
-                facing = ((Rotatable) data).getRotation();
-            } else if (data instanceof Directional) {
-                rotations = new ArrayList<>(((Directional) data).getFaces());
-                facing = ((Directional) data).getFacing();
-            } else {
-                rotations = new ArrayList<>(((Orientable) data).getAxes());
-                facing = ((Orientable) data).getAxis();
-            }
-
-            // Reverse the rotation if player is holding shift
-            int index = (rotations.indexOf(facing) + (player.isSneaking() ? -1 : 1) + rotations.size()) % rotations.size();
-
-            if (data instanceof Rotatable) {
-                ((Rotatable) data).setRotation((BlockFace) rotations.get(index));
-            } else if (data instanceof Directional) {
-                ((Directional) data).setFacing((BlockFace) rotations.get(index));
-            } else {
-                ((Orientable) data).setAxis((Axis) rotations.get(index));
-            }
-            target.setBlockData(data);
-
-        } else {
+        if (!(data instanceof Rotatable) && !(data instanceof Directional) && !(data instanceof Orientable)) {
             player.sendMessage(ChatColor.RED + "That block can't be rotated.");
+            return;
         }
+
+        Enum<?> facing;
+        List<? extends Enum<?>> rotations;
+        List<BlockFace> clockwiseRotations = Arrays.asList(PluginUtil.clockwiseFaces);
+        Comparator<BlockFace> clockwiseComparator = (face1, face2) -> {
+            int index1 = clockwiseRotations.indexOf(face1);
+            int index2 = clockwiseRotations.indexOf(face2);
+            return index1 - index2;
+        };
+
+        if (data instanceof Rotatable) {
+            rotations = new ArrayList<>(Arrays.asList(BlockFace.values()));
+            rotations.remove(BlockFace.SELF);
+            rotations.remove(BlockFace.UP);
+            rotations.remove(BlockFace.DOWN);
+            facing = ((Rotatable) data).getRotation();
+        } else if (data instanceof Directional) {
+            rotations = new ArrayList<>(((Directional) data).getFaces());
+            facing = ((Directional) data).getFacing();
+        } else {
+            rotations = new ArrayList<>(((Orientable) data).getAxes());
+            facing = ((Orientable) data).getAxis();
+        }
+        if (!(data instanceof Orientable)) {
+            ((List<BlockFace>) rotations).sort(clockwiseComparator);
+        }
+
+        // Reverse the rotation if player is holding shift
+        int index = (rotations.indexOf(facing) + (player.isSneaking() ? -1 : 1) + rotations.size()) % rotations.size();
+        if (data instanceof Rotatable) {
+            ((Rotatable) data).setRotation((BlockFace) rotations.get(index));
+        } else if (data instanceof Directional) {
+            ((Directional) data).setFacing((BlockFace) rotations.get(index));
+        } else {
+            ((Orientable) data).setAxis((Axis) rotations.get(index));
+        }
+        target.setBlockData(data);
     }
 }
