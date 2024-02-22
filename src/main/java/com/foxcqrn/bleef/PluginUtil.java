@@ -1,10 +1,6 @@
 package com.foxcqrn.bleef;
 
 import org.bukkit.*;
-import org.bukkit.block.Banner;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.data.type.WallHangingSign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -62,12 +58,13 @@ public class PluginUtil {
             Material.WALL_TORCH,
             Material.NETHER_PORTAL,
             Material.END_PORTAL_FRAME,
-            Material.POINTED_DRIPSTONE,
             Material.GLOW_LICHEN,
             Material.VINE,
             Material.SCULK_VEIN,
             Material.LADDER,
             Material.TRIPWIRE_HOOK,
+            Material.PISTON_HEAD,
+            Material.BELL
     };
 
     public static boolean isAFK(Player player) {

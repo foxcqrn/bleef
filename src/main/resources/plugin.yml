@@ -1,5 +1,5 @@
 name: Bleef
-version: '1.0.11'
+version: '1.0.14'
 main: com.foxcqrn.bleef.Bleef
 api-version: 1.19
 authors: [ hotgothgirl, ashduino101 ]

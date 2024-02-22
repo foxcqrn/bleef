@@ -34,7 +34,6 @@ public class WrenchListener implements Listener {
         if (!"WRENCH".equals(PluginUtil.getDataType(item.getItemMeta()))) return;
 
         event.setCancelled(true);
-
         if (!player.hasPermission("bleef.wrench.bypass")) {
             BlockData data = target.getBlockData();
             BlockState state = target.getState();
@@ -46,7 +45,8 @@ public class WrenchListener implements Listener {
                 data instanceof Bed ||
                 data instanceof CoralWallFan ||
                 state instanceof Skull ||
-                state instanceof Banner) {
+                state instanceof Banner ||
+                (data instanceof Piston && ((Piston) data).isExtended())) {
                 player.sendMessage(ChatColor.RED + "You can't rotate that block.");
                 return;
             }
@@ -59,39 +59,36 @@ public class WrenchListener implements Listener {
         }
 
         BlockData data = target.getBlockData();
-        if (data instanceof Rotatable) {
-            Rotatable block = (Rotatable) data;
-            List<BlockFace> rotations = new ArrayList<>(Arrays.asList(BlockFace.values()));
-            rotations.remove(BlockFace.SELF); // illegal rotations
-            rotations.remove(BlockFace.UP);
-            rotations.remove(BlockFace.DOWN);
-            int startIndex = rotations.indexOf(block.getRotation());
+        if (data instanceof Rotatable || data instanceof Directional || data instanceof Orientable) {
+            List<? extends Enum<?>> rotations;
+            Enum facing;
 
-            for (int i = startIndex; i < rotations.size() + startIndex; i++) {
-                int index = i % rotations.size(); // wrap to beginning
-                block.setRotation(rotations.get(index));
-                target.setBlockData(data);
+            if (data instanceof Rotatable) {
+                rotations = new ArrayList<>(Arrays.asList(BlockFace.values()));
+                rotations.remove(BlockFace.SELF);
+                rotations.remove(BlockFace.UP);
+                rotations.remove(BlockFace.DOWN);
+                facing = ((Rotatable) data).getRotation();
+            } else if (data instanceof Directional) {
+                rotations = new ArrayList<>(((Directional) data).getFaces());
+                facing = ((Directional) data).getFacing();
+            } else {
+                rotations = new ArrayList<>(((Orientable) data).getAxes());
+                facing = ((Orientable) data).getAxis();
             }
-        } else if (data instanceof Directional) {
-            Directional block = (Directional) data;
-            List<BlockFace> faces = new ArrayList<>(block.getFaces());
-            int startIndex = faces.indexOf(block.getFacing());
 
-            for (int i = startIndex; i < faces.size() + startIndex; i++) {
-                int index = i % faces.size();
-                block.setFacing(faces.get(index));
-                target.setBlockData(data);
-            }
-        } else if (data instanceof Orientable) {
-            Orientable block = (Orientable) data;
-            List<Axis> axes = new ArrayList<>(block.getAxes());
-            int startIndex = axes.indexOf(block.getAxis());
+            // Reverse the rotation if player is holding shift
+            int index = (rotations.indexOf(facing) + (player.isSneaking() ? -1 : 1) + rotations.size()) % rotations.size();
 
-            for (int i = startIndex; i < axes.size() + startIndex; i++) {
-                int index = i % axes.size();
-                block.setAxis(axes.get(index));
-                target.setBlockData(data);
+            if (data instanceof Rotatable) {
+                ((Rotatable) data).setRotation((BlockFace) rotations.get(index));
+            } else if (data instanceof Directional) {
+                ((Directional) data).setFacing((BlockFace) rotations.get(index));
+            } else {
+                ((Orientable) data).setAxis((Axis) rotations.get(index));
             }
+            target.setBlockData(data);
+
         } else {
             player.sendMessage(ChatColor.RED + "That block can't be rotated.");
         }
