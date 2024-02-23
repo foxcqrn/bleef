@@ -37,9 +37,7 @@ public class AfkListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         if (PluginUtil.isAFK(player)) {
-            Bukkit.getScheduler().runTask(Bleef.plugin, () -> {
-                PluginUtil.setAFK(player, false);
-            });
+            Bukkit.getScheduler().runTask(Bleef.plugin, () -> PluginUtil.setAFK(player, false));
         }
     }
 

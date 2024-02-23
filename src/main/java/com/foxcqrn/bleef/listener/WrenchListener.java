@@ -5,6 +5,7 @@ import org.bukkit.Axis;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.*;
+import org.bukkit.block.Comparator;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
@@ -15,11 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
-import java.util.Comparator;
 
 public class WrenchListener implements Listener {
 
@@ -31,9 +32,22 @@ public class WrenchListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (item == null || target == null) return;
         if (!"WRENCH".equals(PluginUtil.getDataType(item.getItemMeta()))) return;
-
         event.setCancelled(true);
-        if (!player.hasPermission("bleef.wrench.bypass")) {
+        attemptWrench(target, player);
+    }
+
+    @EventHandler
+    public void onBlockDispense(BlockDispenseEvent event) {
+        ItemStack item = event.getItem();
+        Block block = event.getBlock();
+        if (block.getType() != Material.DISPENSER) return;
+        if (!"WRENCH".equals(PluginUtil.getDataType(item.getItemMeta()))) return;
+        event.setCancelled(true);
+        attemptWrench(block.getRelative(((Directional) block.getBlockData()).getFacing()), null);
+    }
+
+    private void attemptWrench(Block target, Player player) {
+        if (player == null || !player.hasPermission("bleef.wrench.bypass")) {
             BlockData data = target.getBlockData();
             BlockState state = target.getState();
             if (data instanceof WallSign ||
@@ -45,12 +59,12 @@ public class WrenchListener implements Listener {
                 data instanceof CoralWallFan ||
                 state instanceof Banner ||
                 (data instanceof Piston && ((Piston) data).isExtended())) {
-                player.sendMessage(ChatColor.RED + "You can't rotate that block.");
+                if (player != null) player.sendMessage(ChatColor.RED + "You can't rotate that block.");
                 return;
             }
             for (Material m : PluginUtil.WrenchBlacklist) {
                 if (m == target.getType()) {
-                    player.sendMessage(ChatColor.RED + "You can't rotate that block.");
+                    if (player != null) player.sendMessage(ChatColor.RED + "You can't rotate that block.");
                     return;
                 }
             }
@@ -58,14 +72,14 @@ public class WrenchListener implements Listener {
 
         BlockData data = target.getBlockData();
         if (!(data instanceof Rotatable) && !(data instanceof Directional) && !(data instanceof Orientable)) {
-            player.sendMessage(ChatColor.RED + "That block can't be rotated.");
+            if (player != null) player.sendMessage(ChatColor.RED + "That block can't be rotated.");
             return;
         }
 
         Enum<?> facing;
         List<? extends Enum<?>> rotations;
         List<BlockFace> clockwiseRotations = Arrays.asList(PluginUtil.clockwiseFaces);
-        Comparator<BlockFace> clockwiseComparator = (face1, face2) -> {
+        java.util.Comparator<BlockFace> clockwiseComparator = (face1, face2) -> {
             int index1 = clockwiseRotations.indexOf(face1);
             int index2 = clockwiseRotations.indexOf(face2);
             return index1 - index2;
@@ -89,7 +103,7 @@ public class WrenchListener implements Listener {
         }
 
         // Reverse the rotation if player is holding shift
-        int index = (rotations.indexOf(facing) + (player.isSneaking() ? -1 : 1) + rotations.size()) % rotations.size();
+        int index = (rotations.indexOf(facing) + (player != null && player.isSneaking() ? -1 : 1) + rotations.size()) % rotations.size();
         if (data instanceof Rotatable) {
             ((Rotatable) data).setRotation((BlockFace) rotations.get(index));
         } else if (data instanceof Directional) {
@@ -97,6 +111,12 @@ public class WrenchListener implements Listener {
         } else {
             ((Orientable) data).setAxis((Axis) rotations.get(index));
         }
-        target.setBlockData(data);
+
+        target.setBlockData(data, true);
+        if (!(data instanceof Comparator) && !(data instanceof Repeater)) return;
+        Block adjacent = target.getRelative(BlockFace.DOWN);
+        BlockState adjacentState = adjacent.getState();
+        adjacent.setType(Material.STONE);
+        adjacentState.update(true, true);
     }
 }
