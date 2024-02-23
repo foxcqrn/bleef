@@ -117,6 +117,7 @@ public class WrenchListener implements Listener {
         Block adjacent = target.getRelative(BlockFace.DOWN);
         BlockState adjacentState = adjacent.getState();
         adjacent.setType(Material.STONE);
+        adjacent.setType(Material.DIRT);
         adjacentState.update(true, true);
     }
 }
