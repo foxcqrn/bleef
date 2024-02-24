@@ -35,6 +35,8 @@ public class WrenchListener implements Listener {
         event.setCancelled(true);
         if (!attemptWrench(target, !player.hasPermission("bleef.wrench.bypass"), player.isSneaking())) {
             target.getWorld().playSound(target.getLocation(), Sound.BLOCK_COPPER_HIT, 1f, 2f);
+        } else {
+            target.getWorld().playSound(target.getLocation(), target.getBlockData().getSoundGroup().getFallSound(), .5f, 2f);
         }
     }
 
@@ -113,7 +115,6 @@ public class WrenchListener implements Listener {
         }
 
         target.setBlockData(data, true);
-        target.getWorld().playSound(target.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, .5f, .65f);
         if (!(data instanceof Comparator) && !(data instanceof Repeater)) return true;
         Block adjacent = target.getRelative(BlockFace.DOWN);
         BlockState adjacentState = adjacent.getState();
