@@ -2,8 +2,8 @@ package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.PluginUtil;
 import org.bukkit.Axis;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.*;
 import org.bukkit.block.Comparator;
 import org.bukkit.block.data.BlockData;
@@ -33,7 +33,9 @@ public class WrenchListener implements Listener {
         if (item == null || target == null) return;
         if (!"WRENCH".equals(PluginUtil.getDataType(item.getItemMeta()))) return;
         event.setCancelled(true);
-        attemptWrench(target, player);
+        if (!attemptWrench(target, !player.hasPermission("bleef.wrench.bypass"), player.isSneaking())) {
+            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_COPPER_HIT, 1f, 2f);
+        }
     }
 
     @EventHandler
@@ -43,37 +45,35 @@ public class WrenchListener implements Listener {
         if (block.getType() != Material.DISPENSER) return;
         if (!"WRENCH".equals(PluginUtil.getDataType(item.getItemMeta()))) return;
         event.setCancelled(true);
-        attemptWrench(block.getRelative(((Directional) block.getBlockData()).getFacing()), null);
+        if (!attemptWrench(block.getRelative(((Directional) block.getBlockData()).getFacing()), true, false)) {
+            block.getWorld().playSound(block.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 1f, 1.2f);
+        }
     }
 
-    private void attemptWrench(Block target, Player player) {
-        if (player == null || !player.hasPermission("bleef.wrench.bypass")) {
+    private boolean attemptWrench(Block target, boolean enforceBlacklist, boolean counterClockwise) {
+        if (enforceBlacklist) {
             BlockData data = target.getBlockData();
             BlockState state = target.getState();
             if (data instanceof WallSign ||
-                data instanceof WallHangingSign ||
-                data instanceof AmethystCluster ||
-                data instanceof Switch ||
-                data instanceof RedstoneWallTorch ||
-                data instanceof Bed ||
-                data instanceof CoralWallFan ||
-                state instanceof Banner ||
-                (data instanceof Piston && ((Piston) data).isExtended())) {
-                if (player != null) player.sendMessage(ChatColor.RED + "You can't rotate that block.");
-                return;
+                    data instanceof AmethystCluster ||
+                    data instanceof Switch ||
+                    data instanceof RedstoneWallTorch ||
+                    data instanceof Bed ||
+                    data instanceof CoralWallFan ||
+                    state instanceof Banner ||
+                    (data instanceof Piston && ((Piston) data).isExtended())) {
+                return false;
             }
             for (Material m : PluginUtil.WrenchBlacklist) {
                 if (m == target.getType()) {
-                    if (player != null) player.sendMessage(ChatColor.RED + "You can't rotate that block.");
-                    return;
+                    return false;
                 }
             }
         }
 
         BlockData data = target.getBlockData();
         if (!(data instanceof Rotatable) && !(data instanceof Directional) && !(data instanceof Orientable)) {
-            if (player != null) player.sendMessage(ChatColor.RED + "That block can't be rotated.");
-            return;
+            return false;
         }
 
         Enum<?> facing;
@@ -103,7 +103,7 @@ public class WrenchListener implements Listener {
         }
 
         // Reverse the rotation if player is holding shift
-        int index = (rotations.indexOf(facing) + (player != null && player.isSneaking() ? -1 : 1) + rotations.size()) % rotations.size();
+        int index = (rotations.indexOf(facing) + (counterClockwise ? -1 : 1) + rotations.size()) % rotations.size();
         if (data instanceof Rotatable) {
             ((Rotatable) data).setRotation((BlockFace) rotations.get(index));
         } else if (data instanceof Directional) {
@@ -113,11 +113,15 @@ public class WrenchListener implements Listener {
         }
 
         target.setBlockData(data, true);
-        if (!(data instanceof Comparator) && !(data instanceof Repeater)) return;
+        target.getWorld().playSound(target.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, .5f, .65f);
+        if (!(data instanceof Comparator) && !(data instanceof Repeater)) return true;
         Block adjacent = target.getRelative(BlockFace.DOWN);
         BlockState adjacentState = adjacent.getState();
+        BlockData adjacentData = adjacent.getBlockData();
         adjacent.setType(Material.STONE);
         adjacent.setType(Material.DIRT);
         adjacentState.update(true, true);
+        adjacent.setBlockData(adjacentData);
+        return true;
     }
 }

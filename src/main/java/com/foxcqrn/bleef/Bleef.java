@@ -1,12 +1,25 @@
 package com.foxcqrn.bleef;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.BlockPosition;
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.Dispenser;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public final class Bleef extends JavaPlugin {
@@ -29,6 +42,38 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new CompassListener(), plugin);
         pm.registerEvents(new WrenchListener(), plugin);
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
+
+        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+        manager.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST,
+                PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+                    PacketContainer packet = event.getPacket();
+                    List<Sound> sounds = packet.getSoundEffects().getValues(); // get values from it
+                    if (sounds.contains(Sound.BLOCK_PISTON_CONTRACT) || sounds.contains(Sound.BLOCK_PISTON_EXTEND) || sounds.contains(Sound.BLOCK_DISPENSER_DISPENSE)) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        });
+        manager.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST, PacketType.Play.Server.WORLD_EVENT) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                int effectID = packet.getIntegers().read(0);
+
+                // Sound: random.click
+                if (effectID == 1000 || effectID == 2000) {
+                    BlockPosition position = packet.getBlockPositionModifier().read(0);
+                    Block block = event.getPlayer().getWorld().getBlockAt(position.getX(), position.getY(), position.getZ());
+                    if (block.getType() == Material.DISPENSER &&
+                    ((Dispenser) block.getState()).getInventory().containsAtLeast(Items.getWrenchItem(), 1)) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        });
 
         this.getCommand("afk").setExecutor(new CommandAfk(plugin));
         this.getCommand("togglecoords").setExecutor(new CommandToggleCoords(plugin));

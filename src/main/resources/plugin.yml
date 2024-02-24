@@ -1,9 +1,10 @@
 name: Bleef
-version: '1.0.15'
+version: '1.0.16'
 main: com.foxcqrn.bleef.Bleef
 api-version: 1.19
 authors: [ hotgothgirl, ashduino101 ]
 description: core plugin for Backslash server network
+depend: [ProtocolLib]
 commands:
   afk:
     description: 'Toggle AFK status'
