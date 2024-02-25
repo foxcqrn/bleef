@@ -446,13 +446,15 @@ public class SequencePlayer {
     }
 
     private NormalizedSoundParams getParams(SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings, MarkerTracker tracker) {
-        if (note.getVolume() == 0) {
-            return null;
-        }
         Sound inst = translateInstrument(note.getInstrument());
+        float volume = note.getVolume();
         float pitch = (float)note.getTypeValue() + 6f;
         if (instSettings != null) {
             pitch += instSettings.getDetune() / 100;
+            volume *= instSettings.getVolume();
+        }
+        if (volume < 0.0001) {
+            return null;
         }
         if (pitch < 0) {
             pitch = 0f;
@@ -460,7 +462,6 @@ public class SequencePlayer {
         if (pitch > 24) {
             pitch = 12 + (pitch % 12);
         }
-        float volume = note.getVolume();
 
         // Marker tracking
         Float markerVolume = tracker.getValueAtTimeForTypeWithInstrument(note.getTime(), 1, note.getInstrument());
