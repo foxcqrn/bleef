@@ -67,7 +67,7 @@ enum DrumSound {
                 return new SoundType(1.0f, 3.0f, Sound.BLOCK_NOTE_BLOCK_HAT);
             case CRASH:
             case RIDE:
-                return new SoundType(1.0f, 6.0f, Sound.BLOCK_FIRE_EXTINGUISH);
+                return new SoundType(0.7f, 16.0f, Sound.BLOCK_FIRE_EXTINGUISH);
             case SHAKER:
                 return new SoundType(1.0f, 10.0f, Sound.BLOCK_SUSPICIOUS_SAND_PLACE);
             default:
