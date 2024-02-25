@@ -20,6 +20,49 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+class SoundType {
+    float pitch;  // set
+    float volume;  // mult
+    Sound sound;
+    SoundType(float volume, float pitch, Sound sound) {
+        this.pitch = pitch;
+        this.volume = volume;
+        this.sound = sound;
+    }
+}
+
+enum DrumSound {
+    KICK,
+    SNARE,
+    HAT,
+    OPEN_HAT,
+    STICKS,
+    CRASH,
+    RIDE,
+    SHAKER;
+
+    SoundType getSound() {
+        switch (this) {
+            case KICK:
+                return new SoundType(1.0f, 4.0f, Sound.BLOCK_NOTE_BLOCK_BASEDRUM);
+            case SNARE:
+                return new SoundType(1.0f, 7.0f, Sound.BLOCK_NOTE_BLOCK_SNARE);
+            case HAT:
+            case OPEN_HAT:  // idk
+                return new SoundType(1.0f, 12.0f, Sound.BLOCK_NOTE_BLOCK_HAT);
+            case STICKS:
+                return new SoundType(1.0f, 3.0f, Sound.BLOCK_NOTE_BLOCK_HAT);
+            case CRASH:
+            case RIDE:
+                return new SoundType(1.0f, 6.0f, Sound.BLOCK_FIRE_EXTINGUISH);
+            case SHAKER:
+                return new SoundType(1.0f, 10.0f, Sound.BLOCK_SUSPICIOUS_SAND_PLACE);
+            default:
+                return null;
+        }
+    }
+}
+
 public class CommandSequence implements CommandExecutor {
     HashSet<UUID> sequencePlayers = new HashSet<>();
 
@@ -114,109 +157,164 @@ public class CommandSequence implements CommandExecutor {
         return new Thread(sequenceProcessor);
     }
 
-    private @Nullable Sound translateDrumKitOrElectricDrumKit(int note) {
+    private @Nullable DrumSound translateDrumKitOrElectricDrumKit(int note) {
         switch (note) {
+            case 31:
+            case 33:
+            case 37:
+                return DrumSound.STICKS;
             case 35:
             case 36:
-                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
+                return DrumSound.KICK;
             case 38:
             case 39:
             case 40:
-                return Sound.BLOCK_NOTE_BLOCK_SNARE;
+                return DrumSound.SNARE;
             case 42:
-                return Sound.BLOCK_NOTE_BLOCK_HAT;
+            case 44:
+                return DrumSound.HAT;
+            case 46:
+                return DrumSound.OPEN_HAT;
+            case 49:
+            case 57:
+                return DrumSound.CRASH;
+            case 51:
+            case 59:
+                return DrumSound.RIDE;
+            case 82:
+                return DrumSound.SHAKER;
             default:
                 return null;
         }
     }
 
-    private @Nullable Sound translate808DrumKit(int note) {
+    private @Nullable DrumSound translate808DrumKit(int note) {
         switch (note) {
             case 27:
             case 28:
             case 29:
-                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
+                return DrumSound.KICK;
             case 30:
             case 31:
             case 32:
             case 33:
-                return Sound.BLOCK_NOTE_BLOCK_SNARE;
+                return DrumSound.SNARE;
+            case 34:
+            case 44:
+                return DrumSound.STICKS;
             case 35:
-                return Sound.BLOCK_NOTE_BLOCK_HAT;
+                return DrumSound.HAT;
+            case 36:
+                return DrumSound.OPEN_HAT;
+            case 37:
+                return DrumSound.CRASH;
             default:
                 return null;
         }
     }
 
-    private @Nullable Sound translate8BitDrumKit(int note) {
+    private @Nullable DrumSound translate8BitDrumKit(int note) {
         switch (note) {
             case 31:
-                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
+                return DrumSound.KICK;
             case 32:
             case 34:
             case 35:
             case 36:
-                return Sound.BLOCK_NOTE_BLOCK_SNARE;
+                return DrumSound.SNARE;
             case 33:
-                return Sound.BLOCK_NOTE_BLOCK_HAT;
+                return DrumSound.HAT;
             default:
                 return null;
         }
     }
 
-    private @Nullable Sound translate2013DrumKit(int note) {
+    private @Nullable DrumSound translate2013DrumKit(int note) {
         switch (note) {
             case 31:
             case 32:
-                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
+                return DrumSound.KICK;
             case 33:
             case 34:
             case 35:
             case 36:
             case 56:
             case 58:
-                return Sound.BLOCK_NOTE_BLOCK_SNARE;
+                return DrumSound.SNARE;
             case 38:
-                return Sound.BLOCK_NOTE_BLOCK_HAT;
+                return DrumSound.HAT;
+            case 40:
+                return DrumSound.OPEN_HAT;
+            case 42:
+                return DrumSound.CRASH;  // close
+            case 45:
+            case 48:
+            case 53:
+            case 57:
+                return DrumSound.CRASH;
+            case 47:
+            case 54:
+                return DrumSound.RIDE;
             default:
                 return null;
         }
     }
 
-    private @Nullable Sound translate909DrumKit(int note) {
+    private @Nullable DrumSound translate909DrumKit(int note) {
         switch (note) {
             case 27:
             case 28:
             case 29:
-                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
+                return DrumSound.KICK;
             case 30:
             case 31:
             case 32:
-                return Sound.BLOCK_NOTE_BLOCK_SNARE;
+            case 40:
+                return DrumSound.SNARE;
             case 41:
             case 42:
-                return Sound.BLOCK_NOTE_BLOCK_HAT;
+                return DrumSound.HAT;
+            case 43:
+            case 44:
+                return DrumSound.OPEN_HAT;
+            case 45:
+                return DrumSound.CRASH;
+            case 46:
+                return DrumSound.RIDE;
+            case 39:
+                return DrumSound.STICKS;
             default:
                 return null;
         }
     }
 
-    private @Nullable Sound translate2023DrumKit(int note) {
+    private @Nullable DrumSound translate2023DrumKit(int note) {
         switch (note) {
+            case 24:
+            case 30:
+                return DrumSound.STICKS;
             case 25:
             case 26:
             case 27:
             case 28:
             case 29:
-                return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
-            case 30:
+                return DrumSound.KICK;
             case 31:
             case 32:
             case 33:
-                return Sound.BLOCK_NOTE_BLOCK_SNARE;
+                return DrumSound.SNARE;
             case 42:
             case 44:
-                return Sound.BLOCK_NOTE_BLOCK_HAT;
+                return DrumSound.HAT;
+            case 43:
+                return DrumSound.OPEN_HAT;
+            case 46:
+            case 47:
+            case 48:
+                return DrumSound.CRASH;
+            case 49:
+            case 50:
+                return DrumSound.RIDE;
             default:
                 return null;
         }
@@ -260,7 +358,7 @@ public class CommandSequence implements CommandExecutor {
             case 24:
             case 50:
             case 51:
-                return Sound.BLOCK_NOTE_BLOCK_BIT;
+                return Sound.BLOCK_NOTE_BLOCK_FLUTE;
             case 13:
             case 14:
             case 15:
@@ -289,7 +387,7 @@ public class CommandSequence implements CommandExecutor {
         }
     }
 
-    private void playNote(Player player, SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings) {
+    private void playNote(Player player, SequenceProto.Note note, InstrumentSettings instSettings) {
         if (note.getVolume() == 0) {
             return;
         }
@@ -304,46 +402,39 @@ public class CommandSequence implements CommandExecutor {
         if (pitch > 24) {
             pitch = 12 + (pitch % 12);
         }
+        float volume = note.getVolume();
         if (inst == null) {
+            DrumSound drumInst = null;
             switch (note.getInstrument()) {
                 case 2:
                 case 31:
-                    inst = translateDrumKitOrElectricDrumKit(note.getTypeValue());
+                    drumInst = translateDrumKitOrElectricDrumKit(note.getTypeValue());
                     break;
                 case 39:
-                    inst = translate8BitDrumKit(note.getTypeValue());
+                    drumInst = translate8BitDrumKit(note.getTypeValue());
                     break;
                 case 36:
-                    inst = translate808DrumKit(note.getTypeValue());
+                    drumInst = translate808DrumKit(note.getTypeValue());
                     break;
                 case 40:
-                    inst = translate2013DrumKit(note.getTypeValue());
+                    drumInst = translate2013DrumKit(note.getTypeValue());
                     break;
                 case 42:
-                    inst = translate909DrumKit(note.getTypeValue());
+                    drumInst = translate909DrumKit(note.getTypeValue());
                     break;
                 case 53:
-                    inst = translate2023DrumKit(note.getTypeValue());
+                    drumInst = translate2023DrumKit(note.getTypeValue());
                     break;
             }
-            if (inst == null) {
+            if (drumInst == null || drumInst.getSound() == null) {
                 return;
             }
-            switch (inst) {
-                case BLOCK_NOTE_BLOCK_BASEDRUM:
-                    pitch = 4;
-                    break;
-                case BLOCK_NOTE_BLOCK_SNARE:
-                    pitch = 7;
-                    break;
-                case BLOCK_NOTE_BLOCK_HAT:
-                    pitch = 12;
-                    break;
-                default:
-                    pitch = 0;
-            }
+            SoundType sound = drumInst.getSound();
+            inst = sound.sound;
+            volume *= sound.volume;
+            pitch = sound.pitch;
         }
 
-        player.playSound(player.getLocation(), inst, note.getVolume(), (float)Math.pow(2.0, ((double)pitch - 12.0) / 12.0));
+        player.playSound(player.getLocation(), inst, volume, (float)Math.pow(2.0, ((double)pitch - 12.0) / 12.0));
     }
 }
