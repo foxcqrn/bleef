@@ -11,15 +11,20 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
+import org.bukkit.block.Jukebox;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import net.wesjd.anvilgui.AnvilGUI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public final class Bleef extends JavaPlugin {
@@ -41,6 +46,8 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new LeashListener(), plugin);
         pm.registerEvents(new CompassListener(), plugin);
         pm.registerEvents(new WrenchListener(), plugin);
+        pm.registerEvents(new AnvilListener(), plugin);
+        pm.registerEvents(new JukeboxListener(), plugin);
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
@@ -69,6 +76,23 @@ public final class Bleef extends JavaPlugin {
                     Block block = event.getPlayer().getWorld().getBlockAt(position.getX(), position.getY(), position.getZ());
                     if (block.getType() == Material.DISPENSER &&
                     ((Dispenser) block.getState()).getInventory().containsAtLeast(Items.getWrenchItem(), 1)) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        });
+        manager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.WORLD_EVENT) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+
+                if (packet.getIntegers().read(0).toString().equals("1010")) {
+                    Jukebox jukebox = (Jukebox) packet.getBlockPositionModifier().read(0).toLocation(event.getPlayer().getWorld()).getBlock().getState();
+
+                    if (!jukebox.getRecord().hasItemMeta()) return;
+
+                    if (Objects.requireNonNull(jukebox.getRecord().getItemMeta()).getPersistentDataContainer().has(new NamespacedKey(plugin, "sequence"), PersistentDataType.INTEGER)) {
+                        jukebox.stopPlaying();
                         event.setCancelled(true);
                     }
                 }
