@@ -3,11 +3,8 @@ package com.foxcqrn.bleef.listener;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,10 +14,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.*;
 
@@ -30,7 +24,6 @@ public class AnvilListener implements Listener {
 
     static List<Material> DISCS = new ArrayList<>(Arrays.asList(
             Material.MUSIC_DISC_5,
-            Material.MUSIC_DISC_11,
             Material.MUSIC_DISC_13,
             Material.MUSIC_DISC_BLOCKS,
             Material.MUSIC_DISC_CAT,
@@ -95,7 +88,7 @@ public class AnvilListener implements Listener {
             if (author == null) return;
             String authorText = author.text();
 
-            String newName = String.format("%s%s%s by %s", ChatColor.RESET, ChatColor.GRAY, titleText, authorText);
+            String newName = String.format("%s%s%s - %s", ChatColor.RESET, ChatColor.GRAY, authorText, titleText);
 
             meta.setDisplayName(null);
             meta.getPersistentDataContainer()
