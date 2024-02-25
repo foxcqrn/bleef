@@ -86,7 +86,10 @@ class MarkerTracker {
         int i = 0;
         for (SequenceProto.Marker m : this.markers) {
             float mt = m.getTime();
-            if (m.getSetting() != type || m.getInstrument() != instrument) continue;
+            if (m.getSetting() != type || m.getInstrument() != instrument) {
+                i++;
+                continue;
+            }
             SequenceProto.Marker next = this.markers.get(i + 1);
             if (next == null) {
                 return i;
@@ -183,10 +186,15 @@ public class SequencePlayer {
                         sleepTime.set(15000f / markerBPM);
                     }
                     if (time > lastTime.get()) {
+                        long diffTime = (long) (sleepTime.get() * (time - lastTime.get()));
                         try {
-                            TimeUnit.MILLISECONDS.sleep((long) (sleepTime.get() * (time - lastTime.get())));
+                            TimeUnit.MILLISECONDS.sleep(diffTime);
                         } catch (InterruptedException e) {
-                            if (player != null) player.sendMessage(ChatColor.RED + "Can't sleep!");
+                            if (player != null) {
+                                player.sendMessage(ChatColor.RED + "Can't sleep!");
+                            } else {
+                                Logger.getLogger("Bleef").log(Level.WARNING, String.format("Failed to sleep %d milliseconds in SequencePlayer", diffTime));
+                            }
                         }
                     }
                     if (player != null) {
