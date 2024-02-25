@@ -11,6 +11,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
@@ -50,8 +51,8 @@ public final class Bleef extends JavaPlugin {
             public void onPacketSending(PacketEvent event) {
                 if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
                     PacketContainer packet = event.getPacket();
-                    List<Sound> sounds = packet.getSoundEffects().getValues(); // get values from it
-                    if (sounds.contains(Sound.BLOCK_PISTON_CONTRACT) || sounds.contains(Sound.BLOCK_PISTON_EXTEND) || sounds.contains(Sound.BLOCK_DISPENSER_DISPENSE)) {
+                    List<Sound> sounds = packet.getSoundEffects().getValues();
+                    if (sounds.contains(Sound.BLOCK_PISTON_CONTRACT) || sounds.contains(Sound.BLOCK_PISTON_EXTEND)) {
                         event.setCancelled(true);
                     }
                 }
@@ -63,7 +64,7 @@ public final class Bleef extends JavaPlugin {
                 PacketContainer packet = event.getPacket();
                 int effectID = packet.getIntegers().read(0);
 
-                // Sound: random.click
+                // Cancel dispenser fire sound & particle effect if dispenser is using a wrench
                 if (effectID == 1000 || effectID == 2000) {
                     BlockPosition position = packet.getBlockPositionModifier().read(0);
                     Block block = event.getPlayer().getWorld().getBlockAt(position.getX(), position.getY(), position.getZ());
@@ -103,7 +104,7 @@ public final class Bleef extends JavaPlugin {
         saveConfig();
 
         Items.add();
-        PluginUtil.registerGlow();
+        if (NamespacedKey.fromString("bleef:glow") != null) PluginUtil.registerGlow();
 
         if (PluginUtil.isCreative) plugin.getLogger().log(Level.WARNING, "Plugin running in creative mode! Set creative: false in config.yml if this is an error.");
         plugin.getLogger().log(Level.INFO, "boofed up");
