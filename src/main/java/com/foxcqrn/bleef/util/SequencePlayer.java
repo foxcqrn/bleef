@@ -67,12 +67,51 @@ enum DrumSound {
                 return new SoundType(1.0f, 3.0f, Sound.BLOCK_NOTE_BLOCK_HAT);
             case CRASH:
             case RIDE:
-                return new SoundType(0.7f, 16.0f, Sound.BLOCK_FIRE_EXTINGUISH);
+                return new SoundType(0.5f, 16.0f, Sound.BLOCK_FIRE_EXTINGUISH);
             case SHAKER:
                 return new SoundType(1.0f, 10.0f, Sound.BLOCK_SUSPICIOUS_SAND_PLACE);
             default:
                 return null;
         }
+    }
+}
+
+class MarkerTracker {
+    List<SequenceProto.Marker> markers;
+    public MarkerTracker(List<SequenceProto.Marker> markers) {
+        this.markers = markers;
+    }
+
+    public int findLastMarkerIndexBeforeTimeForTypeAndInstrument(float time, int type, int instrument) {
+        int i = 0;
+        for (SequenceProto.Marker m : this.markers) {
+            float mt = m.getTime();
+            if (m.getSetting() != type || m.getInstrument() != instrument) continue;
+            SequenceProto.Marker next = this.markers.get(i + 1);
+            if (next == null) {
+                return i;
+            }
+            float nextTime = next.getTime();
+            if (time < nextTime && time >= mt) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+    public static float lerp(float v0, float v1, float t) {
+        return (1 - t) * v0 + t * v1;
+    }
+
+    public Float getValueAtTimeForTypeWithInstrument(float time, int type, int instrument) {
+        int firstIndex = this.findLastMarkerIndexBeforeTimeForTypeAndInstrument(time, type, instrument);
+        if (firstIndex == -1) return null;
+        SequenceProto.Marker startMarker = this.markers.get(firstIndex);
+        SequenceProto.Marker endMarker = this.markers.get(firstIndex + 1);
+        if (endMarker == null || !endMarker.getBlend()) return startMarker.getValue();
+
+        return lerp(startMarker.getValue(), endMarker.getValue(), (time - startMarker.getTime()) / (endMarker.getTime() - startMarker.getTime()));
     }
 }
 
@@ -130,24 +169,30 @@ public class SequencePlayer {
                 notes.sort((SequenceProto.Note a, SequenceProto.Note b) -> (int)((a.getTime() - b.getTime()) * 1000));
                 AtomicReference<Float> lastTime = new AtomicReference<>((float) 0);
                 float bpm = (float) seq.getSettings().getBpm();
-//                float sleepTime = 1f / ((bpm  * 4f) / 60f) * 1000f;
-                float sleepTime = 15000f / bpm;
+                AtomicReference<Float> sleepTime = new AtomicReference<>(15000f / bpm);
                 if (player != null) player.sendMessage(ChatColor.AQUA + "Playing sequence " + sequenceId);
                 this.playing = true;
+                MarkerTracker tracker = new MarkerTracker(seq.getMarkersList());
                 notes.forEach((SequenceProto.Note note) -> {
                     if (!this.playing) return;
                     float time = note.getTime();
+                    // track BPM if necessary
+                    Float markerBPM = tracker.getValueAtTimeForTypeWithInstrument(note.getTime(), 0, 0);
+                    if (markerBPM != null) {
+                        // recalculate tempo
+                        sleepTime.set(15000f / markerBPM);
+                    }
                     if (time > lastTime.get()) {
                         try {
-                            TimeUnit.MILLISECONDS.sleep((long) (sleepTime * (time - lastTime.get())));
+                            TimeUnit.MILLISECONDS.sleep((long) (sleepTime.get() * (time - lastTime.get())));
                         } catch (InterruptedException e) {
                             if (player != null) player.sendMessage(ChatColor.RED + "Can't sleep!");
                         }
                     }
                     if (player != null) {
-                        playNote(player, note, seq.getSettings().getInstrumentsMap().get(note.getInstrument()));
+                        playNote(player, note, seq.getSettings().getInstrumentsMap().get(note.getInstrument()), tracker);
                     } else {
-                        playNote(location, note, seq.getSettings().getInstrumentsMap().get(note.getInstrument()));
+                        playNote(location, note, seq.getSettings().getInstrumentsMap().get(note.getInstrument()), tracker);
                     }
                     lastTime.set(time);
                     try {
@@ -400,7 +445,7 @@ public class SequencePlayer {
         }
     }
 
-    private NormalizedSoundParams getParams(SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings) {
+    private NormalizedSoundParams getParams(SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings, MarkerTracker tracker) {
         if (note.getVolume() == 0) {
             return null;
         }
@@ -416,6 +461,23 @@ public class SequencePlayer {
             pitch = 12 + (pitch % 12);
         }
         float volume = note.getVolume();
+
+        // Marker tracking
+        Float markerVolume = tracker.getValueAtTimeForTypeWithInstrument(note.getTime(), 1, note.getInstrument());
+        if (markerVolume != null) {
+            volume = markerVolume;
+        }
+
+        Float markerPitch = tracker.getValueAtTimeForTypeWithInstrument(note.getTime(), 11, note.getInstrument());
+        if (markerPitch != null) {
+            pitch = markerPitch / 100;
+        }
+
+        Float markerMasterVolume = tracker.getValueAtTimeForTypeWithInstrument(note.getTime(), 8, 0);
+        if (markerMasterVolume != null) {
+            volume *= markerMasterVolume;
+        }
+
         if (inst == null) {
             DrumSound drumInst = null;
             switch (note.getInstrument()) {
@@ -447,17 +509,18 @@ public class SequencePlayer {
             volume *= sound.volume;
             pitch = sound.pitch;
         }
+
         return new NormalizedSoundParams(inst, volume, (float) Math.pow(2.0, ((double) pitch - 12.0) / 12.0));
     }
 
-    private void playNote(Player player, SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings) {
-        NormalizedSoundParams params = this.getParams(note, instSettings);
+    private void playNote(Player player, SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings, MarkerTracker tracker) {
+        NormalizedSoundParams params = this.getParams(note, instSettings, tracker);
         if (params == null) return;
         player.playSound(player.getLocation(), params.inst, params.volume, params.pitch);
     }
 
-    private void playNote(Location location, SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings) {
-        NormalizedSoundParams params = this.getParams(note, instSettings);
+    private void playNote(Location location, SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings, MarkerTracker tracker) {
+        NormalizedSoundParams params = this.getParams(note, instSettings, tracker);
         if (params == null) return;
         Objects.requireNonNull(location.getWorld()).playSound(location, params.inst, params.volume * 2, params.pitch);
     }
