@@ -3,11 +3,12 @@ package com.foxcqrn.bleef.commands;
 import com.foxcqrn.bleef.Bleef;
 import com.foxcqrn.bleef.protos.SequenceProto;
 import org.bukkit.*;
-import org.bukkit.Note;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import org.jsoup.Jsoup;
 
 import com.foxcqrn.bleef.protos.SequenceProto.*;
 
