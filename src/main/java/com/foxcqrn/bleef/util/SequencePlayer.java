@@ -453,15 +453,6 @@ public class SequencePlayer {
             pitch += instSettings.getDetune() / 100;
             volume *= instSettings.getVolume();
         }
-        if (volume < 0.0001) {
-            return null;
-        }
-        if (pitch < 0) {
-            pitch = 0f;
-        }
-        if (pitch > 24) {
-            pitch = 12 + (pitch % 12);
-        }
 
         // Marker tracking
         Float markerVolume = tracker.getValueAtTimeForTypeWithInstrument(note.getTime(), 1, note.getInstrument());
@@ -477,6 +468,17 @@ public class SequencePlayer {
         Float markerMasterVolume = tracker.getValueAtTimeForTypeWithInstrument(note.getTime(), 8, 0);
         if (markerMasterVolume != null) {
             volume *= markerMasterVolume;
+        }
+
+        // Clamping
+        if (volume < 0.0001) {
+            return null;
+        }
+        if (pitch < 0) {
+            pitch = 0f;
+        }
+        if (pitch > 24) {
+            pitch = 12 + (pitch % 12);
         }
 
         if (inst == null) {
