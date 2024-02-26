@@ -36,7 +36,6 @@ public class JukeboxListener implements Listener {
         PersistentDataContainer persistent = meta.getPersistentDataContainer();
         if (!persistent.has(new NamespacedKey(plugin, "sequence"), PersistentDataType.INTEGER)) return;
         int sequenceId = persistent.get(new NamespacedKey(plugin, "sequence"), PersistentDataType.INTEGER);
-//        Jukebox jukebox = (Jukebox) block;
 
         try {
             if (block.getMetadata("sequence_playing").get(0).asBoolean()) return;

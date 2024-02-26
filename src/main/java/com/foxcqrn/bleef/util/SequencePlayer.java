@@ -67,7 +67,7 @@ enum DrumSound {
                 return new SoundType(1.0f, 3.0f, Sound.BLOCK_NOTE_BLOCK_HAT);
             case CRASH:
             case RIDE:
-                return new SoundType(0.5f, 16.0f, Sound.BLOCK_FIRE_EXTINGUISH);
+                return new SoundType(0.3f, 16.0f, Sound.BLOCK_FIRE_EXTINGUISH);
             case SHAKER:
                 return new SoundType(1.0f, 10.0f, Sound.BLOCK_SUSPICIOUS_SAND_PLACE);
             default:
@@ -86,13 +86,17 @@ class MarkerTracker {
         int i = 0;
         for (SequenceProto.Marker m : this.markers) {
             float mt = m.getTime();
-            if (m.getSetting() != type || m.getInstrument() != instrument) continue;
-            SequenceProto.Marker next = this.markers.get(i + 1);
-            if (next == null) {
-                return i;
+            if (m.getSetting() != type || m.getInstrument() != instrument) {
+                i++;
+                continue;
             }
-            float nextTime = next.getTime();
-            if (time < nextTime && time >= mt) {
+            try {
+                SequenceProto.Marker next = this.markers.get(i + 1);
+                float nextTime = next.getTime();
+                if (time < nextTime && time >= mt) {
+                    return i;
+                }
+            } catch (IndexOutOfBoundsException ie) {
                 return i;
             }
             i++;
@@ -108,7 +112,12 @@ class MarkerTracker {
         int firstIndex = this.findLastMarkerIndexBeforeTimeForTypeAndInstrument(time, type, instrument);
         if (firstIndex == -1) return null;
         SequenceProto.Marker startMarker = this.markers.get(firstIndex);
-        SequenceProto.Marker endMarker = this.markers.get(firstIndex + 1);
+        SequenceProto.Marker endMarker;
+        try {
+            endMarker = this.markers.get(firstIndex + 1);
+        } catch (IndexOutOfBoundsException ie) {
+            return startMarker.getValue();
+        }
         if (endMarker == null || !endMarker.getBlend()) return startMarker.getValue();
 
         return lerp(startMarker.getValue(), endMarker.getValue(), (time - startMarker.getTime()) / (endMarker.getTime() - startMarker.getTime()));
@@ -183,10 +192,15 @@ public class SequencePlayer {
                         sleepTime.set(15000f / markerBPM);
                     }
                     if (time > lastTime.get()) {
+                        long diffTime = (long) (sleepTime.get() * (time - lastTime.get()));
                         try {
-                            TimeUnit.MILLISECONDS.sleep((long) (sleepTime.get() * (time - lastTime.get())));
+                            TimeUnit.MILLISECONDS.sleep(diffTime);
                         } catch (InterruptedException e) {
-                            if (player != null) player.sendMessage(ChatColor.RED + "Can't sleep!");
+                            if (player != null) {
+                                player.sendMessage(ChatColor.RED + "Can't sleep!");
+                            } else {
+                                Logger.getLogger("Bleef").log(Level.WARNING, String.format("Failed to sleep %d milliseconds in SequencePlayer", diffTime));
+                            }
                         }
                     }
                     if (player != null) {
@@ -198,14 +212,16 @@ public class SequencePlayer {
                     try {
                         onNote.call();
                     } catch (Exception e) {
-                        Logger.getLogger("Bleef").log(Level.INFO, "Failed to execute callback onNote for SequencePlayer");
+                        Logger.getLogger("Bleef").log(Level.WARNING, "Failed to execute callback onNote for SequencePlayer");
                     }
                 });
-                onEnded.call();
+                try {
+                    onEnded.call();
+                } catch (Exception e) {
+                    Logger.getLogger("Bleef").log(Level.WARNING, "Failed to execute callback onEnded for SequencePlayer");
+                }
             } catch (IOException e) {
                 if (player != null) player.sendMessage(ChatColor.RED + "Could not read");
-            } catch (Exception e) {
-                Logger.getLogger("Bleef").log(Level.INFO, "Failed to execute callback onEnded for SequencePlayer");
             }
         };
         return new Thread(sequenceProcessor);
