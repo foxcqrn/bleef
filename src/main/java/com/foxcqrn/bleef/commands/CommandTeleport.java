@@ -23,6 +23,10 @@ public class CommandTeleport implements CommandExecutor {
             Bukkit.dispatchCommand(sender, "minecraft:tp " + command);
             return true;
         }
+        if (!PluginUtil.isCreative) {
+            sender.sendMessage(PluginUtil.ErrWrongServer);
+            return true;
+        }
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /teleport <username>");
         }
