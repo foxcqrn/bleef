@@ -2,11 +2,15 @@ package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.Bleef;
 import com.foxcqrn.bleef.util.SequencePlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Jukebox;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,22 +18,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
-
-import java.util.Objects;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.foxcqrn.bleef.Bleef.plugin;
 
 public class JukeboxListener implements Listener {
+
     private void playFromJukebox(Block block, ItemStack record) {
         ItemMeta meta = record.getItemMeta();
         if (meta == null) return;
@@ -58,6 +58,17 @@ public class JukeboxListener implements Listener {
             return null;
         });
         thread.start();
+        BossBar bar = Bukkit.createBossBar(ChatColor.GREEN + "Now Playing: " + meta.getLore().get(0), BarColor.GREEN, BarStyle.SOLID);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getLocation().distance(block.getLocation()) > 40) continue;
+            bar.addPlayer(p);
+        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                bar.removeAll();
+            }
+        }.runTaskLater(plugin, 200);
     }
 
     @EventHandler
