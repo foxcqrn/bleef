@@ -2,10 +2,7 @@ package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.Bleef;
 import com.foxcqrn.bleef.util.SequencePlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Jukebox;
 import org.bukkit.boss.BarColor;
@@ -60,7 +57,8 @@ public class JukeboxListener implements Listener {
         thread.start();
         BossBar bar = Bukkit.createBossBar(ChatColor.GREEN + "Now Playing: " + meta.getLore().get(0), BarColor.GREEN, BarStyle.SOLID);
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getLocation().distance(block.getLocation()) > 40) continue;
+            Location loc = p.getLocation();
+            if (block.getWorld() != loc.getWorld() || loc.distance(block.getLocation()) > 40) continue;
             bar.addPlayer(p);
         }
         new BukkitRunnable() {
