@@ -8,6 +8,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.minecart.RideableMinecart;
@@ -21,6 +22,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.potion.PotionEffect;
@@ -103,37 +105,40 @@ public class EventListener implements Listener {
         event.setFormat("<" + color + "%1$s" + ChatColor.RESET + "> %2$s");
     }
 
+    private boolean isHoe(ItemStack tool) {
+        Material type = tool.getType();
+        return type == Material.WOODEN_HOE ||
+                type == Material.STONE_HOE ||
+                type == Material.IRON_HOE ||
+                type == Material.GOLDEN_HOE ||
+                type == Material.DIAMOND_HOE ||
+                type == Material.NETHERITE_HOE;
+    }
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        Location location = block.getLocation();
         ItemStack tool = player.getInventory().getItemInMainHand();
 
-        if (tool.getType() == Material.WOODEN_HOE ||
-                tool.getType() == Material.STONE_HOE ||
-                tool.getType() == Material.IRON_HOE ||
-                tool.getType() == Material.GOLDEN_HOE ||
-                tool.getType() == Material.DIAMOND_HOE ||
-                tool.getType() == Material.NETHERITE_HOE) {
-            if (block.getType() == Material.WHEAT) {
-                event.setCancelled(true);
-                Ageable ageable = (Ageable) block.getBlockData();
-                if (ageable.getAge() == 7) {
-                    ItemStack item = player.getInventory().getItemInMainHand();
-                    Damageable meta = (Damageable) item.getItemMeta();
-                    meta.setDamage(meta.getDamage() + 1);
-                    item.setItemMeta(meta);
-                    location.getBlock().setType(Material.WHEAT);
-                    player.getInventory().addItem(new ItemStack(Material.WHEAT));
-                    location.getWorld().playSound(location, Sound.BLOCK_GROWING_PLANT_CROP, 1, 0.7f);
-                    if (meta.getDamage() > tool.getType().getMaxDurability() - 1) {
-                        tool.setAmount(tool.getAmount() - 1);
-                        player.playSound(location, Sound.ENTITY_ITEM_BREAK, 1, 1f);
-                    }
-                }
-            }
+        if (!isHoe(tool)) return;
+        if (block.getType() != Material.WHEAT) return;
+        event.setCancelled(true);
+        Ageable ageable = (Ageable) block.getBlockData();
+        if (ageable.getAge() != 7) return;
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+        Damageable meta = (Damageable) item.getItemMeta();
+        Location location = block.getLocation();
+        World world = location.getWorld();
+        meta.setDamage(meta.getDamage() + 1);
+        item.setItemMeta(meta);
+        location.getBlock().setType(Material.WHEAT);
+        world.dropItemNaturally(location, new ItemStack(Material.WHEAT));
+        world.playSound(location, Sound.BLOCK_GROWING_PLANT_CROP, 1, 0.7f);
+        if (meta.getDamage() > tool.getType().getMaxDurability() - 1) {
+            tool.setAmount(tool.getAmount() - 1);
+            world.playSound(location, Sound.ENTITY_ITEM_BREAK, 1, 1f);
         }
     }
 
@@ -163,6 +168,22 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    public void onArmor(InventoryClickEvent event) {
+        if (event.getSlot() != 39 || event.getSlotType() != InventoryType.SlotType.ARMOR) return;
+
+        ItemStack cursor = event.getCursor();
+        ItemStack item = event.getCurrentItem();
+
+        if (cursor == null || item == null) return;
+
+        if (item.getType() == Material.AIR && cursor.getType() != Material.AIR) {
+            Player p = (Player) event.getWhoClicked();
+            p.setItemOnCursor(null);
+            Bukkit.getScheduler().runTask(plugin, () -> p.getInventory().setHelmet(cursor));
+        }
+    }
+
+    @EventHandler
     public void onVehicleCreate(VehicleCreateEvent event) {
         Vehicle vehicle = event.getVehicle();
         if (vehicle instanceof RideableMinecart) {
@@ -170,24 +191,22 @@ public class EventListener implements Listener {
             cart.setMaxSpeed(0.5);
         }
     }
-
-    @EventHandler
-    public void onArmor(InventoryClickEvent event) {
-        if (event.getSlot() != 39 || event.getSlotType() != InventoryType.SlotType.ARMOR) {
-            return;
+    // not working
+    /*@EventHandler
+    public void onVehicleMove(VehicleMoveEvent event) {
+        Vehicle vehicle = event.getVehicle();
+        if (!(vehicle instanceof Minecart)) return;
+        Location to = event.getTo();
+        Location from = event.getFrom();
+        Chunk nextChunk = event.getTo().add(vehicle.getVelocity()).getChunk();
+        if (!from.getChunk().equals(nextChunk)) {
+            nextChunk.addPluginChunkTicket(plugin);
+            System.out.println("Chunk " + nextChunk + " added");
         }
 
-        ItemStack cursor = event.getCursor();
-        ItemStack item = event.getCurrentItem();
-        Player p = (Player) event.getWhoClicked();
-
-        if (cursor == null || item == null) {
-            return;
+        if (!to.getChunk().equals(from.getChunk())) {
+            from.getChunk().removePluginChunkTicket(plugin);
+            System.out.println("Chunk " + from.getChunk() + " removed, to: " + to.getChunk());
         }
-
-        if (item.getType() == Material.AIR && cursor.getType() != Material.AIR) {
-            p.setItemOnCursor(null);
-            Bukkit.getScheduler().runTask(plugin, () -> p.getInventory().setHelmet(cursor));
-        }
-    }
+    }*/
 }
