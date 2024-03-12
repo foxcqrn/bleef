@@ -1,7 +1,7 @@
 name: Bleef
-version: '1.0.18'
+version: '1.0.20'
 main: com.foxcqrn.bleef.Bleef
-api-version: 1.19
+api-version: 1.20
 authors: [ hotgothgirl, ashduino101 ]
 description: core plugin for Backslash server network
 depend: [ProtocolLib]

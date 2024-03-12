@@ -133,24 +133,6 @@ public class PluginUtil {
         );
     }
 
-    public static void registerGlow() {
-        try {
-            Field f = Enchantment.class.getDeclaredField("acceptingNew");
-            f.setAccessible(true);
-            f.set(null, true);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
-            Enchantment.registerEnchantment(glow);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
     public static void setDataType(ItemMeta im, String key) {
         im.getPersistentDataContainer().set(
                 new NamespacedKey(plugin, "BleefSpecialType"),

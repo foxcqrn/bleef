@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -41,10 +42,10 @@ public class Items {
     public static ItemStack getPipeWithWeedItem() {
         ItemStack i = new ItemStack(Material.GOAT_HORN);
         ItemMeta im = i.getItemMeta();
-        Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
         assert im != null;
         im.setDisplayName(ChatColor.GREEN + "Pipe with Weed");
-        im.addEnchant(glow, 1, true);
+        im.addEnchant(Enchantment.RIPTIDE, 0, true);  // glow effect
+        im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         PluginUtil.setDataType(im, "WEED_PIPE");
         i.setItemMeta(im);
         return i;
