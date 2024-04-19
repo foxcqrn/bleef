@@ -1,6 +1,7 @@
 package com.foxcqrn.bleef.util;
 
 import com.foxcqrn.bleef.protos.SequenceProto;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -21,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.foxcqrn.bleef.Bleef.plugin;
+import static org.bukkit.Bukkit.getServer;
 
 class SoundType {
     float pitch;  // set
@@ -539,12 +543,14 @@ public class SequencePlayer {
     private void playNote(Player player, SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings, MarkerTracker tracker) {
         NormalizedSoundParams params = this.getParams(note, instSettings, tracker);
         if (params == null) return;
-        player.playSound(player.getLocation(), params.inst, params.volume, params.pitch);
+        getServer().getScheduler().runTask(plugin, () ->
+                player.playSound(player.getLocation(), params.inst, params.volume, params.pitch));
     }
 
     private void playNote(Location location, SequenceProto.Note note, SequenceProto.InstrumentSettings instSettings, MarkerTracker tracker) {
         NormalizedSoundParams params = this.getParams(note, instSettings, tracker);
         if (params == null) return;
-        Objects.requireNonNull(location.getWorld()).playSound(location, params.inst, params.volume * 2, params.pitch);
+        getServer().getScheduler().runTask(plugin, () ->
+                Objects.requireNonNull(location.getWorld()).playSound(location, params.inst, params.volume * 2, params.pitch));
     }
 }
