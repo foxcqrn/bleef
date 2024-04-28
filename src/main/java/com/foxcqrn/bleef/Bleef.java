@@ -95,6 +95,7 @@ public final class Bleef extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("delhorse")).setExecutor(new CommandDelHorse(plugin));
         Objects.requireNonNull(this.getCommand("map")).setExecutor(new CommandMap(plugin));
         Objects.requireNonNull(this.getCommand("wrench")).setExecutor(new CommandWrench(plugin));
+        Objects.requireNonNull(this.getCommand("packprompt")).setExecutor(new CommandPackPrompt(plugin));
 
         config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");
