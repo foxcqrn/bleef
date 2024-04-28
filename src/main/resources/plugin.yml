@@ -57,10 +57,6 @@ commands:
     description: 'Teleport to a server member'
     usage: '/teleport <username>'
     aliases: [ tp ]
-  sequence:
-    description: 'Plays an OnlineSequencer sequence in-game.'
-    usage: '/sequence <sequence_id|stop>'
-    aliases: [ play ]
   addhorse:
     description: 'Registers the horse a player is riding to the player.'
     usage: '/addhorse'

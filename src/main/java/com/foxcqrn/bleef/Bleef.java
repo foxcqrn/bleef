@@ -11,13 +11,10 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
-import org.bukkit.block.Jukebox;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -45,8 +42,6 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new LeashListener(), plugin);
         pm.registerEvents(new CompassListener(), plugin);
         pm.registerEvents(new WrenchListener(), plugin);
-        pm.registerEvents(new AnvilListener(), plugin);
-        pm.registerEvents(new JukeboxListener(), plugin);
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
@@ -80,44 +75,26 @@ public final class Bleef extends JavaPlugin {
                 }
             }
         });
-        manager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.WORLD_EVENT) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                PacketContainer packet = event.getPacket();
 
-                if (packet.getIntegers().read(0).toString().equals("1010")) {
-                    Jukebox jukebox = (Jukebox) packet.getBlockPositionModifier().read(0).toLocation(event.getPlayer().getWorld()).getBlock().getState();
-
-                    if (!jukebox.getRecord().hasItemMeta()) return;
-
-                    if (Objects.requireNonNull(jukebox.getRecord().getItemMeta()).getPersistentDataContainer().has(new NamespacedKey(plugin, "sequence"), PersistentDataType.INTEGER)) {
-                        jukebox.stopPlaying();
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        });
-
-        this.getCommand("afk").setExecutor(new CommandAfk(plugin));
-        this.getCommand("togglecoords").setExecutor(new CommandToggleCoords(plugin));
-        this.getCommand("playerstats").setExecutor(new CommandPlayerStats(plugin));
-        this.getCommand("housemarker").setExecutor(new CommandHouseMarker(plugin));
-        this.getCommand("addroad").setExecutor(new CommandAddRoad(plugin));
-        this.getCommand("addborder").setExecutor(new CommandAddBorder(plugin));
-        this.getCommand("mapline").setExecutor(new CommandMapLine(plugin));
-        this.getCommand("color").setExecutor(new CommandColor(plugin));
-        this.getCommand("nickname").setExecutor(new CommandNickname(plugin));
-        this.getCommand("sudo").setExecutor(new CommandSudo(plugin));
-        this.getCommand("creative").setExecutor(new CommandCreative(plugin));
-        this.getCommand("survival").setExecutor(new CommandSurvival(plugin));
-        this.getCommand("list").setExecutor(new CommandList(plugin));
-        this.getCommand("speed").setExecutor(new CommandSpeed(plugin));
-        this.getCommand("teleport").setExecutor(new CommandTeleport(plugin));
-        this.getCommand("sequence").setExecutor(new CommandSequence(plugin));
-        this.getCommand("addhorse").setExecutor(new CommandAddHorse(plugin));
-        this.getCommand("delhorse").setExecutor(new CommandDelHorse(plugin));
-        this.getCommand("map").setExecutor(new CommandMap(plugin));
-        this.getCommand("wrench").setExecutor(new CommandWrench(plugin));
+        Objects.requireNonNull(this.getCommand("afk")).setExecutor(new CommandAfk(plugin));
+        Objects.requireNonNull(this.getCommand("togglecoords")).setExecutor(new CommandToggleCoords(plugin));
+        Objects.requireNonNull(this.getCommand("playerstats")).setExecutor(new CommandPlayerStats(plugin));
+        Objects.requireNonNull(this.getCommand("housemarker")).setExecutor(new CommandHouseMarker(plugin));
+        Objects.requireNonNull(this.getCommand("addroad")).setExecutor(new CommandAddRoad(plugin));
+        Objects.requireNonNull(this.getCommand("addborder")).setExecutor(new CommandAddBorder(plugin));
+        Objects.requireNonNull(this.getCommand("mapline")).setExecutor(new CommandMapLine(plugin));
+        Objects.requireNonNull(this.getCommand("color")).setExecutor(new CommandColor(plugin));
+        Objects.requireNonNull(this.getCommand("nickname")).setExecutor(new CommandNickname(plugin));
+        Objects.requireNonNull(this.getCommand("sudo")).setExecutor(new CommandSudo(plugin));
+        Objects.requireNonNull(this.getCommand("creative")).setExecutor(new CommandCreative(plugin));
+        Objects.requireNonNull(this.getCommand("survival")).setExecutor(new CommandSurvival(plugin));
+        Objects.requireNonNull(this.getCommand("list")).setExecutor(new CommandList(plugin));
+        Objects.requireNonNull(this.getCommand("speed")).setExecutor(new CommandSpeed(plugin));
+        Objects.requireNonNull(this.getCommand("teleport")).setExecutor(new CommandTeleport(plugin));
+        Objects.requireNonNull(this.getCommand("addhorse")).setExecutor(new CommandAddHorse(plugin));
+        Objects.requireNonNull(this.getCommand("delhorse")).setExecutor(new CommandDelHorse(plugin));
+        Objects.requireNonNull(this.getCommand("map")).setExecutor(new CommandMap(plugin));
+        Objects.requireNonNull(this.getCommand("wrench")).setExecutor(new CommandWrench(plugin));
 
         config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");
