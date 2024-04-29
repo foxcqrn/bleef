@@ -70,9 +70,6 @@ commands:
     description: 'Get a wrench'
     usage: '/wrench'
     aliases: [ givewrench ]
-  packprompt:
-    description: 'Prompt a resource pack to be added'
-    usage: '/packprompt'
 permissions:
   bleef.mapdraw:
     description: 'Allows access to map editing commands'

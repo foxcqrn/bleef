@@ -10,6 +10,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
+import dev.jorel.commandapi.*;
+import dev.jorel.commandapi.arguments.*;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -31,6 +33,7 @@ public final class Bleef extends JavaPlugin {
     @Override
     public void onLoad() {
         plugin = this;
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(plugin));
     }
 
     @Override
@@ -76,6 +79,8 @@ public final class Bleef extends JavaPlugin {
             }
         });
 
+        CommandAPI.onEnable();
+
         Objects.requireNonNull(this.getCommand("afk")).setExecutor(new CommandAfk(plugin));
         Objects.requireNonNull(this.getCommand("togglecoords")).setExecutor(new CommandToggleCoords(plugin));
         Objects.requireNonNull(this.getCommand("playerstats")).setExecutor(new CommandPlayerStats(plugin));
@@ -95,7 +100,15 @@ public final class Bleef extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("delhorse")).setExecutor(new CommandDelHorse(plugin));
         Objects.requireNonNull(this.getCommand("map")).setExecutor(new CommandMap(plugin));
         Objects.requireNonNull(this.getCommand("wrench")).setExecutor(new CommandWrench(plugin));
-        Objects.requireNonNull(this.getCommand("packprompt")).setExecutor(new CommandPackPrompt(plugin));
+
+        new CommandAPICommand("packprompt")
+                .withArguments(
+                        new TextArgument("url"),
+                        new EntitySelectorArgument.ManyPlayers("target")
+                )
+                .withPermission(CommandPermission.OP)
+                .executes(CommandPackPrompt::onCommand)
+                .register();
 
         config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");

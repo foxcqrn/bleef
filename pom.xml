@@ -31,15 +31,27 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
+                        <id>shade</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>dev.jorel.commandapi</pattern>
+                                    <shadedPattern>com.foxcqrn.bleef.commandapi</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>de.tr7zw.changeme.nbtapi</pattern>
+                                    <shadedPattern>com.foxcqrn.bleef.nbtapi</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -90,6 +102,16 @@
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.jorel</groupId>
+            <artifactId>commandapi-bukkit-shade</artifactId>
+            <version>9.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api</artifactId>
+            <version>2.10.0</version>
         </dependency>
     </dependencies>
 </project>
