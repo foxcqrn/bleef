@@ -18,6 +18,7 @@ import java.util.Optional;
 // https://github.com/hazae41/mc-leasher-bukkit/blob/master/src/main/java/hazae41/leasher/Plugin.java
 public class LeashListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
+    @SuppressWarnings("unused")
     public void onUnleash(EntityUnleashEvent e) {
         if (e.getReason() != EntityUnleashEvent.UnleashReason.DISTANCE) return;
         if (!(e.getEntity() instanceof LivingEntity)) return;

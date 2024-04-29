@@ -8,8 +8,6 @@ import com.foxcqrn.bleef.PluginUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.minecart.RideableMinecart;
@@ -23,21 +21,20 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
-import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Objects;
 import java.util.Random;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public class EventListener implements Listener {
-    FileConfiguration config = plugin.getConfig();
-
     @EventHandler
+    @SuppressWarnings("unused")
     public void onServerPing(ServerListPingEvent event) {
         Random r = new Random();
         int randomNumber = r.nextInt(PluginUtil.MOTDArray.length);
@@ -47,6 +44,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         PluginUtil.updateTabList(false);
@@ -65,6 +63,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PluginUtil.updateTabList(true);
@@ -72,11 +71,12 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         int x1 = event.getFrom().getBlockX();
         int z1 = event.getFrom().getBlockZ();
-        int x2 = event.getTo().getBlockX();
+        int x2 = Objects.requireNonNull(event.getTo()).getBlockX();
         int z2 = event.getTo().getBlockZ();
         int y = event.getTo().getBlockY();
         int wb = PluginUtil.WorldBorder;
@@ -100,16 +100,18 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         event.setDeathMessage(ChatColor.RED + event.getDeathMessage());
         player.sendMessage(ChatColor.GOLD + "You died at " + ChatColor.RED
                 + player.getLocation().getBlockX() + " " + player.getLocation().getBlockY() + " "
                 + player.getLocation().getBlockZ() + ChatColor.GOLD + " in world " + ChatColor.RED
-                + player.getLocation().getWorld().getName() + ChatColor.GOLD + ".");
+                + Objects.requireNonNull(player.getLocation().getWorld()).getName() + ChatColor.GOLD + ".");
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         net.md_5.bungee.api.ChatColor color = PluginUtil.getColor(player);
@@ -123,6 +125,7 @@ public class EventListener implements Listener {
                 || type == Material.DIAMOND_HOE || type == Material.NETHERITE_HOE;
     }
     @EventHandler
+    @SuppressWarnings("unused")
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
@@ -138,9 +141,11 @@ public class EventListener implements Listener {
         Damageable meta = (Damageable) item.getItemMeta();
         Location location = block.getLocation();
         World world = location.getWorld();
+        assert meta != null;
         meta.setDamage(meta.getDamage() + 1);
         item.setItemMeta(meta);
         location.getBlock().setType(Material.WHEAT);
+        assert world != null;
         world.dropItemNaturally(location, new ItemStack(Material.WHEAT));
         world.playSound(location, Sound.BLOCK_GROWING_PLANT_CROP, 1, 0.7f);
         if (meta.getDamage() > tool.getType().getMaxDurability() - 1) {
@@ -150,6 +155,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
@@ -171,7 +177,7 @@ public class EventListener implements Listener {
                 event.setCancelled(true);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 400, 1));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 60));
-                player.getLocation().getWorld().playSound(
+                Objects.requireNonNull(player.getLocation().getWorld()).playSound(
                         player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
                 item.setAmount(item.getAmount() - 1);
             }
@@ -179,6 +185,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onArmor(InventoryClickEvent event) {
         if (event.getSlot() != 39 || event.getSlotType() != InventoryType.SlotType.ARMOR) return;
 
@@ -195,6 +202,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onVehicleCreate(VehicleCreateEvent event) {
         Vehicle vehicle = event.getVehicle();
         if (vehicle instanceof RideableMinecart) {
@@ -202,23 +210,4 @@ public class EventListener implements Listener {
             cart.setMaxSpeed(0.5);
         }
     }
-    // not working
-    /*@EventHandler
-    public void onVehicleMove(VehicleMoveEvent event) {
-        Vehicle vehicle = event.getVehicle();
-        if (!(vehicle instanceof Minecart)) return;
-        Location to = event.getTo();
-        Location from = event.getFrom();
-        Chunk nextChunk = event.getTo().add(vehicle.getVelocity()).getChunk();
-        if (!from.getChunk().equals(nextChunk)) {
-            nextChunk.addPluginChunkTicket(plugin);
-            System.out.println("Chunk " + nextChunk + " added");
-        }
-
-        if (!to.getChunk().equals(from.getChunk())) {
-            from.getChunk().removePluginChunkTicket(plugin);
-            System.out.println("Chunk " + from.getChunk() + " removed, to: " +
-    to.getChunk());
-        }
-    }*/
 }

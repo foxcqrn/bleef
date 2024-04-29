@@ -12,7 +12,7 @@ import java.util.*;
 import dev.jorel.commandapi.executors.CommandArguments;
 
 public class CommandDelHorse {
-    public static void onCommand(CommandSender sender, CommandArguments args) {
+    public static void onCommand(CommandSender sender, @SuppressWarnings("unused") CommandArguments args) {
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         FileConfiguration config = plugin.getConfig();

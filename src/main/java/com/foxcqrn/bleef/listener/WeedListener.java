@@ -15,8 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Objects;
+
 public class WeedListener implements Listener {
     @EventHandler
+    @SuppressWarnings("unused")
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
@@ -30,7 +33,7 @@ public class WeedListener implements Listener {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 600, 1));
                 player.addPotionEffect(
                         new PotionEffect(PotionEffectType.INCREASE_DAMAGE, (1200 * 5), 0));
-                player.getLocation().getWorld().playSound(
+                Objects.requireNonNull(player.getLocation().getWorld()).playSound(
                         player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 2, 0.2F);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                         "particle minecraft:campfire_cosy_smoke " + smokeLocation.getBlockX() + " "

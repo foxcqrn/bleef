@@ -11,21 +11,25 @@ public class CreativeListener implements Listener {
     // Will only run on creative: true
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onItemDrop(PlayerDropItemEvent event) {
         event.getItemDrop().remove();
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onExplosionPrime(ExplosionPrimeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPortal(PlayerPortalEvent event) {
         event.setCancelled(true);
     }

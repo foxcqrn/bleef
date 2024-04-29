@@ -5,12 +5,10 @@ import static com.foxcqrn.bleef.Bleef.plugin;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -22,8 +20,6 @@ public class PluginUtil {
     public static Location SpawnLocation =
             new Location(Bukkit.getWorld("world"), 222.50, 73.00, -185.50, 180, 5);
     public static int WorldBorder = 5000;
-    public static String ErrNoPerm =
-            ChatColor.RED + "You do not have permission to run this command.";
     public static String ErrNoConsole = ChatColor.RED + "Only players may run this command.";
     public static String ErrWrongServer =
             ChatColor.RED + "You can't use that command on this server.";
@@ -94,6 +90,7 @@ public class PluginUtil {
     public static net.md_5.bungee.api.ChatColor getColor(Player player) {
         String hex = config.getString("players." + player.getUniqueId() + ".color");
         if (hex == null) hex = config.getString("players.default.color");
+        assert hex != null;  // shouldn't happen if configured correctly
         return net.md_5.bungee.api.ChatColor.of(hex);
     }
 

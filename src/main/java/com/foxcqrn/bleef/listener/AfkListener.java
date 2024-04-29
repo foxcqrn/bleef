@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class AfkListener implements Listener {
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         if (PluginUtil.isAFK(player)) {
@@ -23,11 +24,13 @@ public class AfkListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (PluginUtil.isAFK(player)) {
             Location preloc = event.getFrom();
             Location postloc = event.getTo();
+            assert postloc != null;
             if (preloc.getBlockX() != postloc.getBlockX()
                     || preloc.getBlockY() != postloc.getBlockY()
                     || preloc.getBlockZ() != postloc.getBlockZ()) {
@@ -37,6 +40,7 @@ public class AfkListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         if (PluginUtil.isAFK(player)) {
@@ -45,6 +49,7 @@ public class AfkListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         if (PluginUtil.isAFK(player)) {

@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import dev.jorel.commandapi.executors.CommandArguments;
 
 public class CommandToggleCoords {
-    public static void onCommand(CommandSender sender, CommandArguments args) {
+    public static void onCommand(CommandSender sender, @SuppressWarnings("unused") CommandArguments args) {
         if (PluginUtil.ToggleCoords.contains(sender.getName())) {
             PluginUtil.ToggleCoords.remove(sender.getName());
             sender.sendMessage(ChatColor.GREEN + "You have enabled actionbar coordinates.");

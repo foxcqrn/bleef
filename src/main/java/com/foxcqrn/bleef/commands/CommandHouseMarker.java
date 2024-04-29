@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 
 import dev.jorel.commandapi.executors.CommandArguments;
 
+import java.util.Objects;
+
 public class CommandHouseMarker {
     public static void onCommand(CommandSender sender, CommandArguments args) {
         if (PluginUtil.isCreative) {
@@ -32,13 +34,15 @@ public class CommandHouseMarker {
         String action = (String) args.get("action");
         assert action != null;
         if (action.equalsIgnoreCase("create")) {
+            assert name != null;
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     "dmarker add set:houses id:" + name.toLowerCase() + " label:\"" + name
                             + "'s House\" x:" + x + " y:" + y + " z:" + z
-                            + " world:" + location.getWorld().getName());
+                            + " world:" + Objects.requireNonNull(location.getWorld()).getName());
             sender.sendMessage(ChatColor.GREEN
                     + "Marker created. Run /housemarker delete to delete the marker.");
         } else if (action.equalsIgnoreCase("delete")) {
+            assert name != null;
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     "dmarker delete set:houses id:" + name.toLowerCase());
             sender.sendMessage(ChatColor.RED

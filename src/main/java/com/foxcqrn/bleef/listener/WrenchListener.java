@@ -25,6 +25,7 @@ import java.util.*;
 
 public class WrenchListener implements Listener {
     @EventHandler
+    @SuppressWarnings("unused")
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
@@ -42,6 +43,7 @@ public class WrenchListener implements Listener {
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onBlockDispense(BlockDispenseEvent event) {
         ItemStack item = event.getItem();
         Block block = event.getBlock();

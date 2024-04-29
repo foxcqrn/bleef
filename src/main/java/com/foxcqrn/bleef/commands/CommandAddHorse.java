@@ -3,7 +3,6 @@ package com.foxcqrn.bleef.commands;
 import static com.foxcqrn.bleef.Bleef.plugin;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
@@ -15,7 +14,7 @@ import java.util.*;
 import dev.jorel.commandapi.executors.CommandArguments;
 
 public class CommandAddHorse {
-    public static void onCommand(CommandSender sender, CommandArguments args) {
+    public static void onCommand(CommandSender sender, @SuppressWarnings("unused") CommandArguments args) {
         Player player = (Player) sender;
         Entity vehicle = player.getVehicle();
         if (vehicle == null) {

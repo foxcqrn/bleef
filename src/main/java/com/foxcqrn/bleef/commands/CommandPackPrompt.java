@@ -13,7 +13,6 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
-import java.util.Formatter;
 import java.util.UUID;
 
 import dev.jorel.commandapi.executors.CommandArguments;

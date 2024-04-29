@@ -30,6 +30,7 @@ public class Items {
         }
     }
 
+    @SuppressWarnings("unused")
     public static ItemStack getPipeItem() {
         ItemStack i = new ItemStack(Material.GOAT_HORN);
         ItemMeta im = i.getItemMeta();

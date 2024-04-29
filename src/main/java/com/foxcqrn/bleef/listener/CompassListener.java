@@ -14,11 +14,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class CompassListener implements Listener {
     @EventHandler
+    @SuppressWarnings("unused")
     public void onPlayerItemHeld(PlayerItemHeldEvent e) {
         int slot = e.getNewSlot();
         Player player = e.getPlayer();

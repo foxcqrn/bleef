@@ -1,14 +1,11 @@
 package com.foxcqrn.bleef.commands;
 
-import com.foxcqrn.bleef.Bleef;
 import com.foxcqrn.bleef.PluginUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import dev.jorel.commandapi.executors.CommandArguments;

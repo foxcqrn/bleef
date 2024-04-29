@@ -1,12 +1,9 @@
 package com.foxcqrn.bleef.commands;
 
-import com.foxcqrn.bleef.Bleef;
 import com.foxcqrn.bleef.PluginUtil;
 
 import org.bukkit.*;
 import org.bukkit.Particle.DustTransition;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -21,7 +18,7 @@ public class CommandMapLine {
 
     public CommandMapLine() {}
 
-    public void onCommand(CommandSender sender, CommandArguments args) {
+    public void onCommand(CommandSender sender, @SuppressWarnings("unused") CommandArguments args) {
         if (PluginUtil.isCreative) {
             sender.sendMessage(PluginUtil.ErrWrongServer);
             return;
@@ -33,11 +30,9 @@ public class CommandMapLine {
             mappingPlayers.remove(player.getUniqueId());
             player.sendMessage(ChatColor.AQUA + "Tracing finished. Adding corners...");
             List<Location> data = mappingData.get(uuid);
-            data.forEach((Location loc) -> {
-                Bukkit.dispatchCommand(sender,
-                        "dmarker addcorner " + loc.getX() + " " + loc.getY() + " " + loc.getZ()
-                                + " " + Objects.requireNonNull(loc.getWorld()).getName());
-            });
+            data.forEach((Location loc) -> Bukkit.dispatchCommand(sender,
+                    "dmarker addcorner " + loc.getX() + " " + loc.getY() + " " + loc.getZ()
+                            + " " + Objects.requireNonNull(loc.getWorld()).getName()));
             player.sendMessage(ChatColor.AQUA + "Adding complete.");
             mappingData.remove(uuid);
             return;
@@ -61,11 +56,9 @@ public class CommandMapLine {
             while (mappingPlayers.contains(uuid)) {
                 data.add(player.getLocation());
                 data.subList(Math.max(data.size() - 101, 0), Math.max(data.size() - 1, 0))
-                        .forEach((Location loc) -> {
-                            Objects.requireNonNull(loc.getWorld())
-                                    .spawnParticle(Particle.DUST_COLOR_TRANSITION, loc, 50,
-                                            dustTransition);
-                        });
+                        .forEach((Location loc) -> Objects.requireNonNull(loc.getWorld())
+                                .spawnParticle(Particle.DUST_COLOR_TRANSITION, loc, 50,
+                                        dustTransition));
                 try {
                     TimeUnit.MILLISECONDS.sleep(200);
                 } catch (InterruptedException e) {
