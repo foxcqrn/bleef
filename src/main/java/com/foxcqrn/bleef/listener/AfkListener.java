@@ -2,6 +2,7 @@ package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.Bleef;
 import com.foxcqrn.bleef.PluginUtil;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,7 +28,9 @@ public class AfkListener implements Listener {
         if (PluginUtil.isAFK(player)) {
             Location preloc = event.getFrom();
             Location postloc = event.getTo();
-            if (preloc.getBlockX() != postloc.getBlockX() || preloc.getBlockY() != postloc.getBlockY() ||  preloc.getBlockZ() != postloc.getBlockZ()) {
+            if (preloc.getBlockX() != postloc.getBlockX()
+                    || preloc.getBlockY() != postloc.getBlockY()
+                    || preloc.getBlockZ() != postloc.getBlockZ()) {
                 PluginUtil.setAFK(player, false);
             }
         }

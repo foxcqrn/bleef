@@ -10,8 +10,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.foxcqrn.bleef.commands.*;
 import com.foxcqrn.bleef.listener.*;
-import dev.jorel.commandapi.*;
-import dev.jorel.commandapi.arguments.*;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -21,12 +20,15 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 
-public final class Bleef extends JavaPlugin {
+import dev.jorel.commandapi.*;
+import dev.jorel.commandapi.arguments.*;
 
+public final class Bleef extends JavaPlugin {
     public static Bleef plugin;
     FileConfiguration config = getConfig();
 
@@ -48,31 +50,37 @@ public final class Bleef extends JavaPlugin {
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-        manager.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST,
-                PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+        manager.addPacketListener(new PacketAdapter(
+                this, ListenerPriority.HIGHEST, PacketType.Play.Server.NAMED_SOUND_EFFECT) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
                     PacketContainer packet = event.getPacket();
                     List<Sound> sounds = packet.getSoundEffects().getValues();
-                    if (sounds.contains(Sound.BLOCK_PISTON_CONTRACT) || sounds.contains(Sound.BLOCK_PISTON_EXTEND)) {
+                    if (sounds.contains(Sound.BLOCK_PISTON_CONTRACT)
+                            || sounds.contains(Sound.BLOCK_PISTON_EXTEND)) {
                         event.setCancelled(true);
                     }
                 }
             }
         });
-        manager.addPacketListener(new PacketAdapter(this, ListenerPriority.HIGHEST, PacketType.Play.Server.WORLD_EVENT) {
+        manager.addPacketListener(new PacketAdapter(
+                this, ListenerPriority.HIGHEST, PacketType.Play.Server.WORLD_EVENT) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 int effectID = packet.getIntegers().read(0);
 
-                // Cancel dispenser fire sound & particle effect if dispenser is using a wrench
+                // Cancel dispenser fire sound & particle effect if
+                // dispenser is using a wrench
                 if (effectID == 1000 || effectID == 2000) {
                     BlockPosition position = packet.getBlockPositionModifier().read(0);
-                    Block block = event.getPlayer().getWorld().getBlockAt(position.getX(), position.getY(), position.getZ());
-                    if (block.getType() == Material.DISPENSER &&
-                    ((Dispenser) block.getState()).getInventory().containsAtLeast(Items.getWrenchItem(), 1)) {
+                    Block block = event.getPlayer().getWorld().getBlockAt(
+                            position.getX(), position.getY(), position.getZ());
+                    if (block.getType() == Material.DISPENSER
+                            && ((Dispenser) block.getState())
+                                       .getInventory()
+                                       .containsAtLeast(Items.getWrenchItem(), 1)) {
                         event.setCancelled(true);
                     }
                 }
@@ -81,31 +89,125 @@ public final class Bleef extends JavaPlugin {
 
         CommandAPI.onEnable();
 
-        Objects.requireNonNull(this.getCommand("afk")).setExecutor(new CommandAfk(plugin));
-        Objects.requireNonNull(this.getCommand("togglecoords")).setExecutor(new CommandToggleCoords(plugin));
-        Objects.requireNonNull(this.getCommand("playerstats")).setExecutor(new CommandPlayerStats(plugin));
-        Objects.requireNonNull(this.getCommand("housemarker")).setExecutor(new CommandHouseMarker(plugin));
-        Objects.requireNonNull(this.getCommand("addroad")).setExecutor(new CommandAddRoad(plugin));
-        Objects.requireNonNull(this.getCommand("addborder")).setExecutor(new CommandAddBorder(plugin));
-        Objects.requireNonNull(this.getCommand("mapline")).setExecutor(new CommandMapLine(plugin));
-        Objects.requireNonNull(this.getCommand("color")).setExecutor(new CommandColor(plugin));
-        Objects.requireNonNull(this.getCommand("nickname")).setExecutor(new CommandNickname(plugin));
-        Objects.requireNonNull(this.getCommand("sudo")).setExecutor(new CommandSudo(plugin));
-        Objects.requireNonNull(this.getCommand("creative")).setExecutor(new CommandCreative(plugin));
-        Objects.requireNonNull(this.getCommand("survival")).setExecutor(new CommandSurvival(plugin));
-        Objects.requireNonNull(this.getCommand("list")).setExecutor(new CommandList(plugin));
-        Objects.requireNonNull(this.getCommand("speed")).setExecutor(new CommandSpeed(plugin));
-        Objects.requireNonNull(this.getCommand("teleport")).setExecutor(new CommandTeleport(plugin));
-        Objects.requireNonNull(this.getCommand("addhorse")).setExecutor(new CommandAddHorse(plugin));
-        Objects.requireNonNull(this.getCommand("delhorse")).setExecutor(new CommandDelHorse(plugin));
-        Objects.requireNonNull(this.getCommand("map")).setExecutor(new CommandMap(plugin));
-        Objects.requireNonNull(this.getCommand("wrench")).setExecutor(new CommandWrench(plugin));
+        new CommandAPICommand("afk")
+                .withFullDescription("Indicates that you are AFK (away-from-keyboard).")
+                .executes(CommandAfk::onCommand)
+                .register();
+
+        new CommandAPICommand("togglecoords")
+                .withFullDescription("Toggles the HUD above the taskbar.")
+                .withAliases("tc", "coords")
+                .executes(CommandToggleCoords::onCommand)
+                .register();
+
+        new CommandAPICommand("playerstats")
+                .withFullDescription("Shows information and statistics about a specific player.")
+                .withArguments(new EntitySelectorArgument.OnePlayer("player"))
+                .withPermission(CommandPermission.OP)
+                .withAliases("pstats", "pinfo", "ps", "pi")
+                .executes(CommandPlayerStats::onCommand)
+                .register();
+
+        new CommandAPICommand("housemarker")
+                .withFullDescription(
+                        "Creates a marker for your house on the Dynmap at your current location.")
+                .withArguments(new MultiLiteralArgument("action", "create", "delete"),
+                        new TextArgument("name").setOptional(true))
+                .withAliases("hm")
+                .executes(CommandHouseMarker::onCommand)
+                .register();
+
+        new CommandAPICommand("addroad")
+                .withFullDescription("Creates a road on the Dynmap from the current set of points.")
+                .withArguments(new MultiLiteralArgument("type", "normal", "highway"),
+                        new GreedyStringArgument("name"))
+                .withPermission("bleef.mapdraw")
+                .withAliases("road")
+                .executes(CommandAddRoad::onCommand)
+                .register();
+
+        new CommandAPICommand("addborder")
+                .withFullDescription(
+                        "Creates a region border on the Dynmap from the current set of points.")
+                .withArguments(new GreedyStringArgument("name"))
+                .withPermission("bleef.mapdraw")
+                .withAliases("border")
+                .executes(CommandAddBorder::onCommand)
+                .register();
+
+        CommandMapLine lineMapper = new CommandMapLine();
+
+        new CommandAPICommand("mapline")
+                .withFullDescription(
+                        "Actively maps a line as the player moves, and adds the points to the Dynmap point set.")
+                .withPermission("bleef.mapdraw")
+                .withAliases("ml")
+                .executes(lineMapper::onCommand)
+                .register();
+
+        new CommandAPICommand("color")
+                .withFullDescription("Changes the color of the player's display name.")
+                .withAliases("setcolor")
+                .withArguments(new GreedyStringArgument("color"))
+                .executes(CommandColor::onCommand)
+                .register();
+
+        new CommandAPICommand("nickname")
+                .withFullDescription("Sets the player's display name.")
+                .withAliases("nick", "name", "setnick", "setname", "nn")
+                .withArguments(new GreedyStringArgument("name"))
+                .executes(CommandNickname::onCommand)
+                .register();
+
+        new CommandAPICommand("sudo")
+                .withFullDescription(
+                        "Executes a command (or sends a message) as if from another player.")
+                .withArguments(new EntitySelectorArgument.OnePlayer("player"),
+                        new GreedyStringArgument("command"))
+                .withPermission(CommandPermission.OP)
+                .executes(CommandSudo::onCommand)
+                .register();
+
+        new CommandAPICommand("speed")
+                .withFullDescription(
+                        "Sets the speed of the player to a specified value, or resets it to the default value.")
+                .withArguments(new MultiLiteralArgument("action", "set", "reset"),
+                        new FloatArgument("value"))
+                .executes(CommandSpeed::onCommand)
+                .register();
+
+        new CommandAPICommand("tpa")
+                .withFullDescription(
+                        "Teleports the player to another specified player, notifying the other player.")
+                .withArguments(new EntitySelectorArgument.OnePlayer("player"))
+                .executes(CommandTeleport::onCommand)
+                .register();
+
+        new CommandAPICommand("addhorse")
+                .withFullDescription("Registers a horse to the player.")
+                .executes(CommandAddHorse::onCommand)
+                .register();
+
+        new CommandAPICommand("delhorse")
+                .withFullDescription("Unregisters a horse from the player.")
+                .executes(CommandDelHorse::onCommand)
+                .register();
+
+        new CommandAPICommand("map")
+                .withFullDescription("Provides the URL to the server Dynmap.")
+                .executes(CommandMap::onCommand)
+                .register();
+
+        new CommandAPICommand("wrench")
+                .withFullDescription("Give a wrench to the current player.")
+                .withAliases("givewrench")
+                .withPermission("bleef.wrench.give")
+                .executes(CommandWrench::onCommand)
+                .register();
 
         new CommandAPICommand("packprompt")
                 .withArguments(
-                        new TextArgument("url"),
-                        new EntitySelectorArgument.ManyPlayers("target")
-                )
+                        new TextArgument("url"), new EntitySelectorArgument.ManyPlayers("target"))
                 .withPermission(CommandPermission.OP)
                 .executes(CommandPackPrompt::onCommand)
                 .register();
@@ -118,7 +220,9 @@ public final class Bleef extends JavaPlugin {
 
         Items.add();
 
-        if (PluginUtil.isCreative) plugin.getLogger().log(Level.WARNING, "Plugin running in creative mode! Set creative: false in config.yml if this is an error.");
+        if (PluginUtil.isCreative)
+            plugin.getLogger().log(Level.WARNING,
+                    "Plugin running in creative mode! Set creative: false in config.yml if this is an error.");
         plugin.getLogger().log(Level.INFO, "boofed up");
     }
 

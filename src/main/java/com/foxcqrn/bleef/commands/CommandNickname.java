@@ -1,41 +1,29 @@
 package com.foxcqrn.bleef.commands;
 
-import com.foxcqrn.bleef.Bleef;
+import static com.foxcqrn.bleef.Bleef.plugin;
+
 import com.foxcqrn.bleef.PluginUtil;
+
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-public class CommandNickname implements CommandExecutor {
-    private final Bleef plugin;
+import dev.jorel.commandapi.executors.CommandArguments;
 
-    public CommandNickname(Bleef plugin) {
-        this.plugin = plugin;
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args) {
-
+public class CommandNickname {
+    public static void onCommand(CommandSender sender, CommandArguments args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(PluginUtil.ErrNoConsole);
-            return true;
-        }
-
-        if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /nickname <name>");
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
         FileConfiguration config = plugin.getConfig();
-        String nickname = String.join(" ", args);
+        String nickname = (String) args.get("name");
         config.set("players." + player.getUniqueId() + ".nickname", nickname);
         plugin.saveConfig();
         sender.sendMessage(ChatColor.GREEN + "Set nickname to " + nickname);
         PluginUtil.updateName(player);
-        return true;
     }
 }

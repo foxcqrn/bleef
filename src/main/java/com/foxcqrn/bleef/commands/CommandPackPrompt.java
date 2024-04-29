@@ -1,6 +1,5 @@
 package com.foxcqrn.bleef.commands;
 
-import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -16,6 +15,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.UUID;
+
+import dev.jorel.commandapi.executors.CommandArguments;
 
 public class CommandPackPrompt {
     public static void onCommand(CommandSender sender, CommandArguments args) {
@@ -59,8 +60,11 @@ public class CommandPackPrompt {
 
         byte[] finalHash = hash;
         assert target != null;
-        target.forEach(p -> ((Player) p).addResourcePack(id, urlTarget, finalHash,
-                "An administrator has requested a resource pack to be added. Would you like to add it?", false));
+        target.forEach(p
+                -> ((Player) p)
+                           .addResourcePack(id, urlTarget, finalHash,
+                                   "An administrator has requested a resource pack to be added. Would you like to add it?",
+                                   false));
         player.sendMessage("Requested resource pack with ID", id.toString());
     }
 }

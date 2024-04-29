@@ -1,9 +1,10 @@
 package com.foxcqrn.bleef.listener;
 
+import static com.foxcqrn.bleef.Bleef.plugin;
+
 import com.foxcqrn.bleef.Items;
 import com.foxcqrn.bleef.PluginUtil;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -30,17 +31,18 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
-import static com.foxcqrn.bleef.Bleef.plugin;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public class EventListener implements Listener {
-
     FileConfiguration config = plugin.getConfig();
 
     @EventHandler
     public void onServerPing(ServerListPingEvent event) {
         Random r = new Random();
         int randomNumber = r.nextInt(PluginUtil.MOTDArray.length);
-        event.setMotd(ChatColor.LIGHT_PURPLE + PluginUtil.MOTDArray[randomNumber] + "\n" + ChatColor.AQUA + PluginUtil.DiscordInvite);
+        event.setMotd(ChatColor.LIGHT_PURPLE + PluginUtil.MOTDArray[randomNumber] + "\n"
+                + ChatColor.AQUA + PluginUtil.DiscordInvite);
         event.setMaxPlayers(420);
     }
 
@@ -49,7 +51,8 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
         PluginUtil.updateTabList(false);
         if (!player.hasPlayedBefore()) {
-            Bukkit.broadcastMessage(ChatColor.AQUA + "Welcome to the server, " + player.getName() + "!");
+            Bukkit.broadcastMessage(
+                    ChatColor.AQUA + "Welcome to the server, " + player.getName() + "!");
             player.teleport(PluginUtil.SpawnLocation);
         }
         PluginUtil.updateName(player);
@@ -82,12 +85,17 @@ public class EventListener implements Listener {
         // survival world border
         if (fromInsideBorder && toOutsideBorder && !PluginUtil.isCreative) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.AQUA + "You have reached the world border. You cannot go past this point.");
+            player.sendMessage(ChatColor.AQUA
+                    + "You have reached the world border. You cannot go past this point.");
         }
         double speed = Math.floor(event.getFrom().distance(event.getTo()) * 200) / 10;
         if (!PluginUtil.ToggleCoords.contains(player.getName())) {
             ChatColor color = ChatColor.LIGHT_PURPLE; // doesn't support hex colors :(
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(ChatColor.WHITE + "X: " + color + x2 + ChatColor.WHITE + " Y: " + color + y + ChatColor.WHITE + " Z: " + color + z2 + ChatColor.WHITE + " MPS: " + color + speed).create());
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    new ComponentBuilder(ChatColor.WHITE + "X: " + color + x2 + ChatColor.WHITE
+                            + " Y: " + color + y + ChatColor.WHITE + " Z: " + color + z2
+                            + ChatColor.WHITE + " MPS: " + color + speed)
+                            .create());
         }
     }
 
@@ -95,7 +103,10 @@ public class EventListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         event.setDeathMessage(ChatColor.RED + event.getDeathMessage());
-        player.sendMessage(ChatColor.GOLD + "You died at " + ChatColor.RED + player.getLocation().getBlockX() + " " + player.getLocation().getBlockY() + " " + player.getLocation().getBlockZ() + ChatColor.GOLD + " in world " + ChatColor.RED + player.getLocation().getWorld().getName() + ChatColor.GOLD + ".");
+        player.sendMessage(ChatColor.GOLD + "You died at " + ChatColor.RED
+                + player.getLocation().getBlockX() + " " + player.getLocation().getBlockY() + " "
+                + player.getLocation().getBlockZ() + ChatColor.GOLD + " in world " + ChatColor.RED
+                + player.getLocation().getWorld().getName() + ChatColor.GOLD + ".");
     }
 
     @EventHandler
@@ -107,16 +118,12 @@ public class EventListener implements Listener {
 
     private boolean isHoe(ItemStack tool) {
         Material type = tool.getType();
-        return type == Material.WOODEN_HOE ||
-                type == Material.STONE_HOE ||
-                type == Material.IRON_HOE ||
-                type == Material.GOLDEN_HOE ||
-                type == Material.DIAMOND_HOE ||
-                type == Material.NETHERITE_HOE;
+        return type == Material.WOODEN_HOE || type == Material.STONE_HOE
+                || type == Material.IRON_HOE || type == Material.GOLDEN_HOE
+                || type == Material.DIAMOND_HOE || type == Material.NETHERITE_HOE;
     }
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-
         Player player = event.getPlayer();
         Block block = event.getBlock();
         ItemStack tool = player.getInventory().getItemInMainHand();
@@ -150,18 +157,22 @@ public class EventListener implements Listener {
         if (item == null) return;
 
         // disable fireworks for elytra flight in survival
-        if (item.getType() == Material.FIREWORK_ROCKET && player.isGliding() && !PluginUtil.isCreative) {
+        if (item.getType() == Material.FIREWORK_ROCKET && player.isGliding()
+                && !PluginUtil.isCreative) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "Rocket powered elytra flight is disabled on this server.");
+            player.sendMessage(
+                    ChatColor.RED + "Rocket powered elytra flight is disabled on this server.");
         }
 
         // rotten flesh block action
-        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_AIR
+                || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (item.isSimilar(Items.getRottenFleshBlockItem())) {
                 event.setCancelled(true);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 400, 1));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 60));
-                player.getLocation().getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
+                player.getLocation().getWorld().playSound(
+                        player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
                 item.setAmount(item.getAmount() - 1);
             }
         }
@@ -206,7 +217,8 @@ public class EventListener implements Listener {
 
         if (!to.getChunk().equals(from.getChunk())) {
             from.getChunk().removePluginChunkTicket(plugin);
-            System.out.println("Chunk " + from.getChunk() + " removed, to: " + to.getChunk());
+            System.out.println("Chunk " + from.getChunk() + " removed, to: " +
+    to.getChunk());
         }
     }*/
 }

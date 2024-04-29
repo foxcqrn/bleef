@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 
 public class CreativeListener implements Listener {
-
     // Will only run on creative: true
 
     @EventHandler

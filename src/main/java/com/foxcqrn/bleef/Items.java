@@ -1,5 +1,7 @@
 package com.foxcqrn.bleef;
 
+import static com.foxcqrn.bleef.Bleef.plugin;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,10 +10,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import static com.foxcqrn.bleef.Bleef.plugin;
-
 public class Items {
-    private static final Recipe[] recipes = new Recipe[]{
+    private static final Recipe[] recipes = new Recipe[] {
             fleshBlockRecipe(),
             rottenFleshRecipe(),
             pipeWithWeedRecipe(),
@@ -25,7 +25,8 @@ public class Items {
     }
     public static void remove() {
         for (Recipe r : recipes) {
-            Bukkit.removeRecipe(new NamespacedKey(plugin, PluginUtil.getDataType(r.getResult().getItemMeta())));
+            Bukkit.removeRecipe(
+                    new NamespacedKey(plugin, PluginUtil.getDataType(r.getResult().getItemMeta())));
         }
     }
 
@@ -44,7 +45,7 @@ public class Items {
         ItemMeta im = i.getItemMeta();
         assert im != null;
         im.setDisplayName(ChatColor.GREEN + "Pipe with Weed");
-        im.addEnchant(Enchantment.RIPTIDE, 0, true);  // glow effect
+        im.addEnchant(Enchantment.RIPTIDE, 0, true); // glow effect
         im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         PluginUtil.setDataType(im, "WEED_PIPE");
         i.setItemMeta(im);

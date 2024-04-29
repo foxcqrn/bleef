@@ -2,6 +2,7 @@ package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.Bleef;
 import com.foxcqrn.bleef.PluginUtil;
+
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-
 public class CompassListener implements Listener {
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent e) {
@@ -27,7 +27,8 @@ public class CompassListener implements Listener {
             return;
         }
         // can't use isSimilar here due to the lodestone metadata
-        if (item.getType() == Material.COMPASS && "HORSE_COMPASS".equals(PluginUtil.getDataType(item.getItemMeta()))) {
+        if (item.getType() == Material.COMPASS
+                && "HORSE_COMPASS".equals(PluginUtil.getDataType(item.getItemMeta()))) {
             CompassMeta meta = getCompassMeta(item, player);
             if (meta == null) {
                 return;
@@ -41,7 +42,8 @@ public class CompassListener implements Listener {
         assert meta != null;
         meta.setLodestoneTracked(false);
         FileConfiguration config = Bleef.plugin.getConfig();
-        String playerVehicle = config.getString(String.format("players.%s.horse", player.getUniqueId()));
+        String playerVehicle =
+                config.getString(String.format("players.%s.horse", player.getUniqueId()));
         if (playerVehicle == null) {
             return null;
         }

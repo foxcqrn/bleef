@@ -1,6 +1,7 @@
 package com.foxcqrn.bleef.listener;
 
 import com.foxcqrn.bleef.PluginUtil;
+
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -23,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class WrenchListener implements Listener {
-
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -33,10 +33,12 @@ public class WrenchListener implements Listener {
         if (item == null || target == null) return;
         if (!"WRENCH".equals(PluginUtil.getDataType(item.getItemMeta()))) return;
         event.setCancelled(true);
-            target.getWorld().playSound(target.getLocation(),
-                    (attemptWrench(target, !player.hasPermission("bleef.wrench.bypass"), player.isSneaking())) ?
-                            target.getBlockData().getSoundGroup().getFallSound() :
-                            Sound.BLOCK_COPPER_HIT, 2f, 2f);
+        target.getWorld().playSound(target.getLocation(),
+                (attemptWrench(
+                        target, !player.hasPermission("bleef.wrench.bypass"), player.isSneaking()))
+                        ? target.getBlockData().getSoundGroup().getFallSound()
+                        : Sound.BLOCK_COPPER_HIT,
+                2f, 2f);
     }
 
     @EventHandler
@@ -46,23 +48,22 @@ public class WrenchListener implements Listener {
         if (block.getType() != Material.DISPENSER) return;
         if (!"WRENCH".equals(PluginUtil.getDataType(item.getItemMeta()))) return;
         event.setCancelled(true);
-        if (!attemptWrench(block.getRelative(((Directional) block.getBlockData()).getFacing()), true, false)) {
+        if (!attemptWrench(block.getRelative(((Directional) block.getBlockData()).getFacing()),
+                    true, false)) {
             block.getWorld().playSound(block.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 1f, 1.2f);
         }
     }
 
-    private boolean attemptWrench(Block target, boolean enforceBlacklist, boolean counterClockwise) {
+    private boolean attemptWrench(
+            Block target, boolean enforceBlacklist, boolean counterClockwise) {
         if (enforceBlacklist) {
             BlockData data = target.getBlockData();
             BlockState state = target.getState();
-            if (data instanceof WallSign ||
-                    data instanceof AmethystCluster ||
-                    data instanceof Switch ||
-                    data instanceof RedstoneWallTorch ||
-                    data instanceof Bed ||
-                    data instanceof CoralWallFan ||
-                    state instanceof Banner ||
-                    (data instanceof Piston && ((Piston) data).isExtended())) {
+            if (data instanceof WallSign || data instanceof AmethystCluster
+                    || data instanceof Switch || data instanceof RedstoneWallTorch
+                    || data instanceof Bed || data instanceof CoralWallFan
+                    || state instanceof Banner
+                    || (data instanceof Piston && ((Piston) data).isExtended())) {
                 return false;
             }
             for (Material m : PluginUtil.WrenchBlacklist) {
@@ -73,7 +74,8 @@ public class WrenchListener implements Listener {
         }
 
         BlockData data = target.getBlockData();
-        if (!(data instanceof Rotatable) && !(data instanceof Directional) && !(data instanceof Orientable)) {
+        if (!(data instanceof Rotatable) && !(data instanceof Directional)
+                && !(data instanceof Orientable)) {
             return false;
         }
 
@@ -104,7 +106,8 @@ public class WrenchListener implements Listener {
         }
 
         // Reverse the rotation if player is holding shift
-        int index = (rotations.indexOf(facing) + (counterClockwise ? -1 : 1) + rotations.size()) % rotations.size();
+        int index = (rotations.indexOf(facing) + (counterClockwise ? -1 : 1) + rotations.size())
+                % rotations.size();
         if (data instanceof Rotatable) {
             ((Rotatable) data).setRotation((BlockFace) rotations.get(index));
         } else if (data instanceof Directional) {
@@ -122,7 +125,8 @@ public class WrenchListener implements Listener {
         adjacent.setType(Material.DIRT);
         adjacentState.update(true, true);
         adjacent.setBlockData(adjacentData);
-        // for some reason this is clearing the wrench from the dispenser if it's under a repeater??
+        // for some reason this is clearing the wrench from the dispenser if
+        // it's under a repeater??
         return true;
     }
 }
