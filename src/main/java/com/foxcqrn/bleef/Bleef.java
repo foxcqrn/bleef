@@ -205,7 +205,9 @@ public final class Bleef extends JavaPlugin {
 
         new CommandAPICommand("packprompt")
                 .withArguments(
-                        new TextArgument("url"), new EntitySelectorArgument.ManyPlayers("target"))
+                        new MultiLiteralArgument("mode", "direct", "external"),
+                        new TextArgument("url"),
+                        new EntitySelectorArgument.ManyPlayers("target"))
                 .withPermission(CommandPermission.OP)
                 .executes(CommandPackPrompt::onCommand)
                 .register();

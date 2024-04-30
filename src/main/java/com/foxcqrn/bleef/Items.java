@@ -24,10 +24,10 @@ public class Items {
         }
     }
     public static void remove() {
-        for (Recipe r : recipes) {
-            Bukkit.removeRecipe(
-                    new NamespacedKey(plugin, PluginUtil.getDataType(r.getResult().getItemMeta())));
-        }
+        // for (Recipe r : recipes) {
+        //     Bukkit.removeRecipe(
+        //             new NamespacedKey(plugin, PluginUtil.getDataType(r.getResult().getItemMeta())));
+        // }
     }
 
     @SuppressWarnings("unused")
