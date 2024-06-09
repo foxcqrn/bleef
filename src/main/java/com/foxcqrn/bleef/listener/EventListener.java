@@ -9,8 +9,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -20,7 +18,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.potion.PotionEffect;
@@ -201,7 +198,7 @@ public class EventListener implements Listener {
         }
     }
 
-    @EventHandler
+    /*@EventHandler
     @SuppressWarnings("unused")
     public void onVehicleCreate(VehicleCreateEvent event) {
         Vehicle vehicle = event.getVehicle();
@@ -209,5 +206,14 @@ public class EventListener implements Listener {
             RideableMinecart cart = (RideableMinecart) vehicle;
             cart.setMaxSpeed(0.5);
         }
+    }*/
+
+    @EventHandler
+    @SuppressWarnings("unused")
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        String msg = event.getMessage().toLowerCase();
+        if (!msg.startsWith("/dynmap hide") || player.isOp()) return;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "dynmap show " + player.getName()), 60000);
     }
 }
