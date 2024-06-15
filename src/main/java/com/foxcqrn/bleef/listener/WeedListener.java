@@ -27,12 +27,12 @@ public class WeedListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_AIR
                 || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (item != null && item.isSimilar(Items.getPipeWithWeedItem())) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 150, 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 150, 1));
                 player.addPotionEffect(
-                        new PotionEffect(PotionEffectType.FAST_DIGGING, (1200 * 5), 0));
+                        new PotionEffect(PotionEffectType.HASTE, (1200 * 5), 0));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 600, 1));
                 player.addPotionEffect(
-                        new PotionEffect(PotionEffectType.INCREASE_DAMAGE, (1200 * 5), 0));
+                        new PotionEffect(PotionEffectType.STRENGTH, (1200 * 5), 0));
                 Objects.requireNonNull(player.getLocation().getWorld()).playSound(
                         player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 2, 0.2F);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(),

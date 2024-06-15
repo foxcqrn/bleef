@@ -9,6 +9,9 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.FoodComponent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Items {
     private static final Recipe[] recipes = new Recipe[] {
@@ -56,7 +59,13 @@ public class Items {
     public static ItemStack getRottenFleshBlockItem() {
         ItemStack i = new ItemStack(Material.NETHERRACK);
         ItemMeta im = i.getItemMeta();
+
         assert im != null;
+        FoodComponent food = im.getFood();
+        food.setEatSeconds(4);
+        food.addEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1), 100);
+        food.addEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 60), 100);
+        im.setFood(food);
         im.setDisplayName(ChatColor.WHITE + "Block of Rotten Flesh");
         PluginUtil.setDataType(im, "FLESH_BLOCK");
         i.setItemMeta(im);

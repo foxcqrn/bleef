@@ -22,6 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.*;
@@ -47,43 +48,48 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new WrenchListener(), plugin);
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
-        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-        manager.addPacketListener(new PacketAdapter(
-                this, ListenerPriority.HIGHEST, PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-                    PacketContainer packet = event.getPacket();
-                    List<Sound> sounds = packet.getSoundEffects().getValues();
-                    if (sounds.contains(Sound.BLOCK_PISTON_CONTRACT)
-                            || sounds.contains(Sound.BLOCK_PISTON_EXTEND)) {
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        });
-        manager.addPacketListener(new PacketAdapter(
-                this, ListenerPriority.HIGHEST, PacketType.Play.Server.WORLD_EVENT) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                PacketContainer packet = event.getPacket();
-                int effectID = packet.getIntegers().read(0);
 
-                // Cancel dispenser fire sound & particle effect if
-                // dispenser is using a wrench
-                if (effectID == 1000 || effectID == 2000) {
-                    BlockPosition position = packet.getBlockPositionModifier().read(0);
-                    Block block = event.getPlayer().getWorld().getBlockAt(
-                            position.getX(), position.getY(), position.getZ());
-                    if (block.getType() == Material.DISPENSER
-                            && ((Dispenser) block.getState())
-                                       .getInventory()
-                                       .containsAtLeast(Items.getWrenchItem(), 1)) {
-                        event.setCancelled(true);
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
+            ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+            manager.addPacketListener(new PacketAdapter(
+                    this, ListenerPriority.HIGHEST, PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+                @Override
+                public void onPacketSending(PacketEvent event) {
+                    if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+                        PacketContainer packet = event.getPacket();
+                        List<Sound> sounds = packet.getSoundEffects().getValues();
+                        if (sounds.contains(Sound.BLOCK_PISTON_CONTRACT)
+                                || sounds.contains(Sound.BLOCK_PISTON_EXTEND)) {
+                            event.setCancelled(true);
+                        }
                     }
                 }
-            }
-        });
+            });
+            manager.addPacketListener(new PacketAdapter(
+                    this, ListenerPriority.HIGHEST, PacketType.Play.Server.WORLD_EVENT) {
+                @Override
+                public void onPacketSending(PacketEvent event) {
+                    PacketContainer packet = event.getPacket();
+                    int effectID = packet.getIntegers().read(0);
+
+                    // Cancel dispenser fire sound & particle effect if
+                    // dispenser is using a wrench
+                    if (effectID == 1000 || effectID == 2000) {
+                        BlockPosition position = packet.getBlockPositionModifier().read(0);
+                        Block block = event.getPlayer().getWorld().getBlockAt(
+                                position.getX(), position.getY(), position.getZ());
+                        if (block.getType() == Material.DISPENSER
+                                && ((Dispenser) block.getState())
+                                .getInventory()
+                                .containsAtLeast(Items.getWrenchItem(), 1)) {
+                            event.setCancelled(true);
+                        }
+                    }
+                }
+            });
+        } else {
+            Logger.getLogger("Bleef").warning("ProtocolLib not found. Certain features will be disabled.");
+        }
 
         CommandAPI.onEnable();
 
@@ -204,6 +210,7 @@ public final class Bleef extends JavaPlugin {
                 .register();
 
         new CommandAPICommand("packprompt")
+                .withFullDescription("Prompts a specified player or group of players with a resource pack.")
                 .withArguments(
                         new MultiLiteralArgument("mode", "direct", "external"),
                         new TextArgument("url"),
@@ -211,6 +218,11 @@ public final class Bleef extends JavaPlugin {
                 .withPermission(CommandPermission.OP)
                 .executes(CommandPackPrompt::onCommand)
                 .register();
+//
+//        new CommandAPICommand("unfuck")
+//                .withFullDescription("Unfucks the current region")
+//                .executes(CommandUnfuck::onCommand)
+//                .register();
 
         config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");
