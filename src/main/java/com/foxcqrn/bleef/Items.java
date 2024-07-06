@@ -61,11 +61,11 @@ public class Items {
         ItemMeta im = i.getItemMeta();
 
         assert im != null;
-        FoodComponent food = im.getFood();
-        food.setEatSeconds(4);
-        food.addEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1), 100);
-        food.addEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 60), 100);
-        im.setFood(food);
+//        FoodComponent food = im.getFood();
+//        food.setEatSeconds(4);
+//        food.addEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1), 100);
+//        food.addEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 60), 100);
+//        im.setFood(food);
         im.setDisplayName(ChatColor.WHITE + "Block of Rotten Flesh");
         PluginUtil.setDataType(im, "FLESH_BLOCK");
         i.setItemMeta(im);

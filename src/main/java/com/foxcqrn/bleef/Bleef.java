@@ -218,11 +218,6 @@ public final class Bleef extends JavaPlugin {
                 .withPermission(CommandPermission.OP)
                 .executes(CommandPackPrompt::onCommand)
                 .register();
-//
-//        new CommandAPICommand("unfuck")
-//                .withFullDescription("Unfucks the current region")
-//                .executes(CommandUnfuck::onCommand)
-//                .register();
 
         config.addDefault("creative", false);
         config.addDefault("players.default.color", "#FFFFFF");
