@@ -7,6 +7,7 @@ import com.foxcqrn.bleef.PluginUtil;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -121,6 +122,14 @@ public class EventListener implements Listener {
                 || type == Material.IRON_HOE || type == Material.GOLDEN_HOE
                 || type == Material.DIAMOND_HOE || type == Material.NETHERITE_HOE;
     }
+
+    private boolean isAxe(ItemStack tool) {
+        Material type = tool.getType();
+        return type == Material.WOODEN_AXE || type == Material.STONE_AXE
+                || type == Material.IRON_AXE || type == Material.GOLDEN_AXE
+                || type == Material.DIAMOND_AXE || type == Material.NETHERITE_AXE;
+    }
+
     @EventHandler
     @SuppressWarnings("unused")
     public void onBlockBreak(BlockBreakEvent event) {
@@ -156,6 +165,8 @@ public class EventListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
+        Block target = event.getClickedBlock();
+        Action action = event.getAction();
 
         if (item == null) return;
 
@@ -167,9 +178,21 @@ public class EventListener implements Listener {
                     ChatColor.RED + "Rocket powered elytra flight is disabled on this server.");
         }
 
+        // sign dewax
+        if (isAxe(item) && action == Action.RIGHT_CLICK_BLOCK && target.getState() instanceof Sign) {
+            Sign sign = (Sign) target.getState();
+            if (!sign.isWaxed()) return;
+            World world = player.getWorld();
+            world.playEffect(target.getLocation(), Effect.COPPER_WAX_OFF, null);
+            world.playSound(target.getLocation(), Sound.ITEM_AXE_STRIP, 1, 1);
+            sign.setWaxed(false);
+            sign.update(true);
+            event.setCancelled(true);
+        }
+
         // rotten flesh block action
-        if (event.getAction() == Action.RIGHT_CLICK_AIR
-                || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (action == Action.RIGHT_CLICK_AIR
+                || action == Action.RIGHT_CLICK_BLOCK) {
             if (item.isSimilar(Items.getRottenFleshBlockItem())) {
                 event.setCancelled(true);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 400, 1));
