@@ -195,7 +195,7 @@ public class EventListener implements Listener {
                 || action == Action.RIGHT_CLICK_BLOCK) {
             if (item.isSimilar(Items.getRottenFleshBlockItem())) {
                 event.setCancelled(true);
-                player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 400, 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 60));
                 Objects.requireNonNull(player.getLocation().getWorld()).playSound(
                         player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
