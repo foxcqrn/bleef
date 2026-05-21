@@ -31,10 +31,14 @@ public final class Bleef extends JavaPlugin {
     public static Bleef plugin;
     FileConfiguration config = getConfig();
 
+    ForcedChunkManager forcedChunkManager;
+
     @Override
     public void onLoad() {
         plugin = this;
+        forcedChunkManager = new ForcedChunkManager();
         CommandAPI.onLoad(new CommandAPIBukkitConfig(plugin));
+
     }
 
     @Override
@@ -46,6 +50,7 @@ public final class Bleef extends JavaPlugin {
         pm.registerEvents(new LeashListener(), plugin);
         pm.registerEvents(new CompassListener(), plugin);
         pm.registerEvents(new WrenchListener(), plugin);
+        pm.registerEvents(new MinecartMoveListener(), plugin);
         if (PluginUtil.isCreative) pm.registerEvents(new CreativeListener(), plugin);
 
 
@@ -231,6 +236,10 @@ public final class Bleef extends JavaPlugin {
             plugin.getLogger().log(Level.WARNING,
                     "Plugin running in creative mode! Set creative: false in config.yml if this is an error.");
         plugin.getLogger().log(Level.INFO, "boofed up");
+    }
+
+    public ForcedChunkManager getForcedChunkManager() {
+        return this.forcedChunkManager;
     }
 
     @Override
