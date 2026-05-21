@@ -12,7 +12,6 @@ import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class MinecartMoveListener implements Listener {
     @EventHandler
@@ -36,7 +35,7 @@ public class MinecartMoveListener implements Listener {
                 forcedChunkManager.entityLoadChunk(v.getUniqueId(), centerChunkX, centerChunkZ);
             }
 
-
+            previouslyTracked.forEach(chunkPos -> {
 
                 Integer chunkX = chunkPos.getKey();
                 Integer chunkZ = chunkPos.getValue();
