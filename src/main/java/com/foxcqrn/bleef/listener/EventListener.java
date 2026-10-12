@@ -5,6 +5,9 @@ import static com.foxcqrn.bleef.Bleef.plugin;
 import com.foxcqrn.bleef.Items;
 import com.foxcqrn.bleef.PluginUtil;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -88,12 +91,17 @@ public class EventListener implements Listener {
         }
         double speed = Math.floor(event.getFrom().distance(event.getTo()) * 200) / 10;
         if (!PluginUtil.ToggleCoords.contains(player.getName())) {
-            ChatColor color = ChatColor.LIGHT_PURPLE; // doesn't support hex colors :(
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    new ComponentBuilder(ChatColor.WHITE + "X: " + color + x2 + ChatColor.WHITE
-                            + " Y: " + color + y + ChatColor.WHITE + " Z: " + color + z2
-                            + ChatColor.WHITE + " MPS: " + color + speed)
-                            .create());
+            TextColor color = TextColor.color(PluginUtil.getColor(player).getColor().getRGB() & 0xFFFFFF);
+            player.sendActionBar(Component.text()
+                    .append(Component.text("X: ", NamedTextColor.WHITE))
+                    .append(Component.text(x2, color))
+                    .append(Component.text(" Y: ", NamedTextColor.WHITE))
+                    .append(Component.text(y, color))
+                    .append(Component.text(" Z: ", NamedTextColor.WHITE))
+                    .append(Component.text(z2, color))
+                    .append(Component.text(" MPS: ", NamedTextColor.WHITE))
+                    .append(Component.text(speed, color))
+                    .build());
         }
     }
 

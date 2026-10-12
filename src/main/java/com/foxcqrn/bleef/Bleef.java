@@ -32,12 +32,13 @@ public final class Bleef extends JavaPlugin {
     FileConfiguration config = getConfig();
 
     ForcedChunkManager forcedChunkManager;
+    NameTagManager nameTags;
 
     @Override
     public void onLoad() {
         plugin = this;
         forcedChunkManager = new ForcedChunkManager();
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(plugin));
+        CommandAPI.onLoad(new CommandAPIPaperConfig(plugin));
 
     }
 
@@ -229,7 +230,8 @@ public final class Bleef extends JavaPlugin {
         config.addDefault("players.horses", new ArrayList<String>());
         saveDefaultConfig();
         saveConfig();
-
+        nameTags = new NameTagManager(plugin);
+        pm.registerEvents(nameTags, plugin);
         Items.add();
 
         if (PluginUtil.isCreative)
@@ -242,10 +244,15 @@ public final class Bleef extends JavaPlugin {
         return this.forcedChunkManager;
     }
 
+    public NameTagManager getNameTags() {
+        return nameTags;
+    }
+
     @Override
     public void onDisable() {
         saveDefaultConfig();
         saveConfig();
+        if (nameTags != null) nameTags.shutdown();
         Items.remove();
         plugin.getLogger().log(Level.INFO, "boofed down");
     }

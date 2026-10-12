@@ -70,15 +70,14 @@ public class PluginUtil {
                     player.getDisplayName() + ChatColor.LIGHT_PURPLE + " is now AFK");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     "discord broadcast > " + getNickname(player) + " is now AFK");
-            player.setPlayerListName(AFKPrefix + getNickname(player));
         } else {
             AFKList.remove(player.getName());
-            updateName(player);
             Bukkit.broadcastMessage(
                     player.getDisplayName() + ChatColor.LIGHT_PURPLE + " is no longer AFK");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     "discord broadcast > " + getNickname(player) + " is no longer AFK");
         }
+        updateName(player);
     }
 
     public static String getNickname(Player player) {
@@ -98,7 +97,9 @@ public class PluginUtil {
         String name = getNickname(player);
         net.md_5.bungee.api.ChatColor color = getColor(player);
         player.setDisplayName(color + name);
-        player.setPlayerListName(color + name);
+        player.setPlayerListName(isAFK(player) ? AFKPrefix + name : color + name);
+        player.setWaypointColor(Color.fromRGB(getColor(player).getColor().getRGB() & 0xFFFFFF));
+        if (plugin.getNameTags() != null) plugin.getNameTags().update(player);
     }
 
     public static void updateTabList(boolean playerQuit) {
