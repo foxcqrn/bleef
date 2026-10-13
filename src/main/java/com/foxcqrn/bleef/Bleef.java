@@ -33,6 +33,7 @@ public final class Bleef extends JavaPlugin {
 
     ForcedChunkManager forcedChunkManager;
     NameTagManager nameTags;
+    HorseWaypoints horseWaypoints;
 
     @Override
     public void onLoad() {
@@ -232,6 +233,8 @@ public final class Bleef extends JavaPlugin {
         saveConfig();
         nameTags = new NameTagManager(plugin);
         pm.registerEvents(nameTags, plugin);
+        horseWaypoints = new HorseWaypoints(plugin);
+        pm.registerEvents(horseWaypoints, plugin);
         Items.add();
 
         if (PluginUtil.isCreative)
@@ -247,6 +250,8 @@ public final class Bleef extends JavaPlugin {
     public NameTagManager getNameTags() {
         return nameTags;
     }
+
+    public HorseWaypoints getHorseWaypoints() { return horseWaypoints; }
 
     @Override
     public void onDisable() {

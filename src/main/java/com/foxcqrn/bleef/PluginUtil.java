@@ -11,6 +11,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 public class PluginUtil {
     static FileConfiguration config = plugin.getConfig();
@@ -87,7 +88,11 @@ public class PluginUtil {
     }
 
     public static net.md_5.bungee.api.ChatColor getColor(Player player) {
-        String hex = config.getString("players." + player.getUniqueId() + ".color");
+        return getColor(player.getUniqueId());
+    }
+
+    public static net.md_5.bungee.api.ChatColor getColor(UUID uuid) {
+        String hex = config.getString("players." + uuid + ".color");
         if (hex == null) hex = config.getString("players.default.color");
         assert hex != null;  // shouldn't happen if configured correctly
         return net.md_5.bungee.api.ChatColor.of(hex);
@@ -100,6 +105,7 @@ public class PluginUtil {
         player.setPlayerListName(isAFK(player) ? AFKPrefix + name : color + name);
         player.setWaypointColor(Color.fromRGB(getColor(player).getColor().getRGB() & 0xFFFFFF));
         if (plugin.getNameTags() != null) plugin.getNameTags().update(player);
+        if (plugin.getHorseWaypoints() != null) plugin.getHorseWaypoints().refresh(player.getUniqueId());
     }
 
     public static void updateTabList(boolean playerQuit) {

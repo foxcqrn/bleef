@@ -22,6 +22,7 @@ public class CommandDelHorse {
         }
         config.set(String.format("players.%s.horse", playerUUID), null);
         plugin.saveConfig();
+        plugin.getHorseWaypoints().unregister(playerUUID);
         player.sendMessage(
                 ChatColor.GREEN + String.format("Removed vehicle for %s.", player.getName()));
     }

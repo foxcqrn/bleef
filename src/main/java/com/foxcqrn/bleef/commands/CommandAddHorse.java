@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -36,6 +37,7 @@ public class CommandAddHorse {
         }
         config.set(String.format("players.%s.horse", playerUUID), vehicleUUID.toString());
         plugin.saveConfig();
+        plugin.getHorseWaypoints().register(playerUUID, (LivingEntity) vehicle);
         player.sendMessage(ChatColor.GREEN
                 + String.format("Registered %s to %s.", vehicle.getName(), player.getName()));
     }
