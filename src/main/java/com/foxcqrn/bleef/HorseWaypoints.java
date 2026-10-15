@@ -27,18 +27,18 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class HorseWaypoints implements Listener {
     private static final Key STYLE = Key.key("minecraft", "bowtie");
-
     private static final double TRANSMIT_RANGE = 2000.0;
-
     private final JavaPlugin plugin;
     private final NamespacedKey modifierKey;
     private final Map<UUID, UUID> mountToOwner = new ConcurrentHashMap<>();
+    private final Set<UUID> retired = ConcurrentHashMap.newKeySet();
     private final boolean filterActive;
 
     public HorseWaypoints(JavaPlugin plugin) {
@@ -53,7 +53,6 @@ public final class HorseWaypoints implements Listener {
             return;
         }
 
-        // Covers mounts already loaded when the plugin enables (spawn chunks, /reload)
         mountToOwner.forEach((mountId, ownerId) -> {
             if (Bukkit.getEntity(mountId) instanceof LivingEntity mount) {
                 apply(mount, ownerId);
@@ -63,6 +62,7 @@ public final class HorseWaypoints implements Listener {
 
     public void register(UUID ownerId, LivingEntity mount) {
         unregister(ownerId);
+        retired.remove(mount.getUniqueId());
         mountToOwner.put(mount.getUniqueId(), ownerId);
         apply(mount, ownerId);
     }
@@ -72,6 +72,7 @@ public final class HorseWaypoints implements Listener {
             if (!entry.getValue().equals(ownerId)) {
                 return false;
             }
+            retired.add(entry.getKey());
             if (Bukkit.getEntity(entry.getKey()) instanceof LivingEntity mount) {
                 clear(mount);
             }
@@ -117,6 +118,11 @@ public final class HorseWaypoints implements Listener {
         AttributeInstance range = mount.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE);
         if (range != null) {
             removeRangeModifier(range);
+            if (range.getValue() > 0) {
+                plugin.getLogger().warning("Horse waypoint range is still " + range.getValue()
+                        + " after clearing it (base " + range.getBaseValue() + ", modifiers "
+                        + range.getModifiers() + ")");
+            }
         }
         mount.setWaypointStyle(null);
         mount.setWaypointColor(null);
@@ -158,14 +164,13 @@ public final class HorseWaypoints implements Listener {
             return false;
         }
         try {
-            // Looked up by name so this compiles against older ProtocolLib versions too
             PacketType type = PacketType.findCurrent(
                     PacketType.Protocol.PLAY, PacketType.Sender.SERVER, "TrackedWaypoint");
             if (type == null || !type.isSupported()) {
                 return false;
             }
             ProtocolLibrary.getProtocolManager().addPacketListener(
-                    new WaypointFilter(plugin, type, mountToOwner));
+                    new WaypointFilter(plugin, type, mountToOwner, retired));
             return true;
         } catch (Exception | LinkageError e) {
             plugin.getLogger().warning("Could not install the waypoint packet filter: " + e);
@@ -174,8 +179,8 @@ public final class HorseWaypoints implements Listener {
     }
 
     /**
-     * Cancels waypoint packets about a registered mount for every player except its owner.
-     * Waypoints about players and everything else pass through untouched.
+     * Cancels waypoint packets about a registered mount for every player except its owner, and
+     * about a retired mount for everyone. Waypoints about players and everything else pass through.
      *
      * The packet holds an operation (track / update / untrack) and a TrackedWaypoint whose
      * identifier is Either<UUID, String>. An entity's waypoint uses the entity's UUID. Server
@@ -187,17 +192,18 @@ public final class HorseWaypoints implements Listener {
 
         private final JavaPlugin owner;
         private final Map<UUID, UUID> mountToOwner;
+        private final Set<UUID> retired;
         private final AtomicBoolean warned = new AtomicBoolean();
 
-        // Cached after the first successful read
         private volatile Field waypointField;
         private volatile Field identifierField;
         private volatile Method leftMethod;
 
-        WaypointFilter(JavaPlugin plugin, PacketType type, Map<UUID, UUID> mountToOwner) {
+        WaypointFilter(JavaPlugin plugin, PacketType type, Map<UUID, UUID> mountToOwner, Set<UUID> retired) {
             super(plugin, ListenerPriority.HIGHEST, type);
             this.owner = plugin;
             this.mountToOwner = mountToOwner;
+            this.retired = retired;
         }
 
         @Override
@@ -207,6 +213,10 @@ public final class HorseWaypoints implements Listener {
             }
             UUID subject = readSubject(event.getPacket().getHandle());
             if (subject == null) {
+                return;
+            }
+            if (retired.contains(subject)) {
+                event.setCancelled(true);
                 return;
             }
             UUID ownerId = mountToOwner.get(subject);
