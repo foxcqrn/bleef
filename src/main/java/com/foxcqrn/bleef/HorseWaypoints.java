@@ -16,8 +16,12 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,12 +42,15 @@ public final class HorseWaypoints implements Listener {
     private final JavaPlugin plugin;
     private final NamespacedKey modifierKey;
     private final Map<UUID, UUID> mountToOwner = new ConcurrentHashMap<>();
-    private final Set<UUID> retired = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> playerIds = ConcurrentHashMap.newKeySet();
     private final boolean filterActive;
 
     public HorseWaypoints(JavaPlugin plugin) {
         this.plugin = plugin;
         this.modifierKey = new NamespacedKey(plugin, "horse_waypoint");
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            playerIds.add(online.getUniqueId());
+        }
         loadRegistered();
         this.filterActive = registerPacketFilter();
 
@@ -62,7 +69,6 @@ public final class HorseWaypoints implements Listener {
 
     public void register(UUID ownerId, LivingEntity mount) {
         unregister(ownerId);
-        retired.remove(mount.getUniqueId());
         mountToOwner.put(mount.getUniqueId(), ownerId);
         apply(mount, ownerId);
     }
@@ -72,7 +78,6 @@ public final class HorseWaypoints implements Listener {
             if (!entry.getValue().equals(ownerId)) {
                 return false;
             }
-            retired.add(entry.getKey());
             if (Bukkit.getEntity(entry.getKey()) instanceof LivingEntity mount) {
                 clear(mount);
             }
@@ -86,6 +91,21 @@ public final class HorseWaypoints implements Listener {
                 apply(mount, ownerId);
             }
         });
+    }
+
+    @EventHandler
+    public void onLogin(PlayerLoginEvent event) {
+        playerIds.add(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        playerIds.add(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        playerIds.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -164,13 +184,14 @@ public final class HorseWaypoints implements Listener {
             return false;
         }
         try {
+            // Looked up by name so this compiles against older ProtocolLib versions too
             PacketType type = PacketType.findCurrent(
                     PacketType.Protocol.PLAY, PacketType.Sender.SERVER, "TrackedWaypoint");
             if (type == null || !type.isSupported()) {
                 return false;
             }
             ProtocolLibrary.getProtocolManager().addPacketListener(
-                    new WaypointFilter(plugin, type, mountToOwner, retired));
+                    new WaypointFilter(plugin, type, mountToOwner, playerIds));
             return true;
         } catch (Exception | LinkageError e) {
             plugin.getLogger().warning("Could not install the waypoint packet filter: " + e);
@@ -179,8 +200,12 @@ public final class HorseWaypoints implements Listener {
     }
 
     /**
-     * Cancels waypoint packets about a registered mount for every player except its owner, and
-     * about a retired mount for everyone. Waypoints about players and everything else pass through.
+     * Cancels every waypoint packet about an entity that isn't a player, unless it is a registered
+     * mount going to its owner. Player waypoints and waypoints that aren't about an entity pass
+     * through untouched.
+     *
+     * Untrack packets always pass. They only tell the client to forget a waypoint, so letting them
+     * through can't reveal anything, and cancelling one could leave a dot stuck on a client.
      *
      * The packet holds an operation (track / update / untrack) and a TrackedWaypoint whose
      * identifier is Either<UUID, String>. An entity's waypoint uses the entity's UUID. Server
@@ -192,18 +217,20 @@ public final class HorseWaypoints implements Listener {
 
         private final JavaPlugin owner;
         private final Map<UUID, UUID> mountToOwner;
-        private final Set<UUID> retired;
+        private final Set<UUID> playerIds;
         private final AtomicBoolean warned = new AtomicBoolean();
 
+        // Found by reflection on the first packet, then cached
+        private volatile Field operationField;
         private volatile Field waypointField;
         private volatile Field identifierField;
         private volatile Method leftMethod;
 
-        WaypointFilter(JavaPlugin plugin, PacketType type, Map<UUID, UUID> mountToOwner, Set<UUID> retired) {
+        WaypointFilter(JavaPlugin plugin, PacketType type, Map<UUID, UUID> mountToOwner, Set<UUID> playerIds) {
             super(plugin, ListenerPriority.HIGHEST, type);
             this.owner = plugin;
             this.mountToOwner = mountToOwner;
-            this.retired = retired;
+            this.playerIds = playerIds;
         }
 
         @Override
@@ -211,17 +238,25 @@ public final class HorseWaypoints implements Listener {
             if (event.isPlayerTemporary()) {
                 return;
             }
-            UUID subject = readSubject(event.getPacket().getHandle());
-            if (subject == null) {
+            Object packet = event.getPacket().getHandle();
+            UUID subject = readSubject(packet);
+            if (subject == null || isUntrack(packet) || playerIds.contains(subject)) {
                 return;
             }
-            if (retired.contains(subject)) {
+            if (!event.getPlayer().getUniqueId().equals(mountToOwner.get(subject))) {
                 event.setCancelled(true);
-                return;
             }
-            UUID ownerId = mountToOwner.get(subject);
-            if (ownerId != null && !ownerId.equals(event.getPlayer().getUniqueId())) {
-                event.setCancelled(true);
+        }
+
+        private boolean isUntrack(Object packet) {
+            Field field = operationField;
+            if (field == null) {
+                return false;
+            }
+            try {
+                return field.get(packet) instanceof Enum<?> operation && operation.name().equals("UNTRACK");
+            } catch (ReflectiveOperationException e) {
+                return false;
             }
         }
 
@@ -252,7 +287,15 @@ public final class HorseWaypoints implements Listener {
             }
         }
 
+        /** Finds the operation and waypoint fields of the packet, and caches what we need. */
         private Field locate(Class<?> packetClass) throws ReflectiveOperationException {
+            for (Field field : packetClass.getDeclaredFields()) {
+                if (!Modifier.isStatic(field.getModifiers()) && field.getType().isEnum()) {
+                    field.setAccessible(true);
+                    operationField = field;
+                    break;
+                }
+            }
             for (Field field : packetClass.getDeclaredFields()) {
                 if (Modifier.isStatic(field.getModifiers())) {
                     continue;
